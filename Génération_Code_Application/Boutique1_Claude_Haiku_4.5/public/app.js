@@ -477,8 +477,8 @@ function showPaymentPage() {
 
                 <div class="form-group">
                     <label>Numéro de carte</label>
-                    <input type="text" id="cardNumber" placeholder="4532 1234 5678 9010" maxlength="19" required
-                           onkeyup="this.value = this.value.replace(/\s/g, '').match(/.{1,4}/g)?.join(' ') || this.value.replace(/\s/g, '')">
+                    <input type="text" id="cardNumber" placeholder="4532123456789010" maxlength="16" inputmode="numeric" required
+                           onkeyup="this.value = this.value.replace(/\D/g, '')">
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
