@@ -1,0 +1,51 @@
+---
+import type { Category } from "@/db/schema";
+
+interface Props {
+  categories: Category[];
+}
+
+const { categories } = Astro.props;
+
+const icons: Record<string, string> = {
+  components: "◈",
+  peripherals: "⌨",
+  storage: "▣",
+  networking: "◎",
+};
+---
+
+<section id="categories" class="border-b border-border py-16 sm:py-20">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="max-w-2xl">
+      <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Shop by category</h2>
+      <p class="mt-2 text-ink-muted">
+        From core components to connectivity — find what your build needs.
+      </p>
+    </div>
+
+    <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        categories.map((cat) => (
+          <li>
+            <a
+              href={`/catalog?category=${cat.slug}`}
+              class="group block h-full rounded-xl border border-border bg-surface-raised p-6 transition hover:border-accent/30 hover:bg-surface-muted/40"
+            >
+              <span
+                class="flex h-11 w-11 items-center justify-center rounded-lg bg-accent/10 font-mono text-xl text-accent"
+                aria-hidden="true"
+              >
+                {icons[cat.slug] ?? "•"}
+              </span>
+              <h3 class="mt-4 font-semibold">{cat.name}</h3>
+              <p class="mt-2 text-sm text-ink-muted line-clamp-2">
+                {cat.description}
+              </p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# build
+.next
+out
+build
+
+# env
+.env
+.env*.local
+
+# prisma client
+/generated/prisma
+
+# debug
+npm-debug.log*
+.DS_Store
+*.pem
+
+# vercel
+.vercel
+
+# user uploads (keep directory via .gitkeep)
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
+/public/uploads/reviews/*
+!/public/uploads/reviews/.gitkeep

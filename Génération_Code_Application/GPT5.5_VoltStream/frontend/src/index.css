@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-grid-dark: #0a0e17;
+  --color-grid-surface: #111827;
+  --color-grid-border: #1e293b;
+  --color-grid-cyan: #22d3ee;
+  --color-grid-purple: #a855f7;
+  --color-grid-muted: #94a3b8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-grid-dark);
+  color: #e2e8f0;
+}

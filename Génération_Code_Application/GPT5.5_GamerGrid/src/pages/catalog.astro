@@ -1,0 +1,38 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CatalogBrowser from '@/components/solid/CatalogBrowser';
+import {
+  getAllCategories,
+  getAllProducts,
+  getProductPriceBounds,
+} from '@/lib/products';
+
+const [products, categories, priceBounds] = await Promise.all([
+  getAllProducts().catch(() => []),
+  getAllCategories().catch(() => []),
+  getProductPriceBounds().catch(() => ({ min: 0, max: 500 })),
+]);
+---
+
+<BaseLayout
+  title="Product catalog — VoltStream"
+  description="Browse and filter VoltStream air purifiers, humidifiers, and smart bottles."
+>
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <div class="mb-10 max-w-2xl">
+      <p class="text-xs font-medium uppercase tracking-wider text-volt-400">Shop</p>
+      <h1 class="mt-1 text-3xl font-bold text-white sm:text-4xl">Product catalog</h1>
+      <p class="mt-3 text-slate-400">
+        Search and filter our full lineup. Open any product to read reviews or add your own when signed in.
+      </p>
+    </div>
+
+    <CatalogBrowser
+      products={products}
+      categories={categories}
+      priceMin={priceBounds.min}
+      priceMax={priceBounds.max}
+      client:load
+    />
+  </section>
+</BaseLayout>

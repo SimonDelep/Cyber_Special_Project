@@ -1,0 +1,51 @@
+---
+import type { ReviewWithAuthor } from '@/db/schema';
+import { renderStars } from '@/lib/rating';
+
+interface Props {
+  reviews: ReviewWithAuthor[];
+}
+
+const { reviews } = Astro.props;
+---
+
+{reviews.length === 0 ? (
+  <p class="rounded-2xl border border-luna-200 bg-luna-50 px-6 py-10 text-center text-sm text-luna-500">
+    No reviews yet. Be the first to share your thoughts!
+  </p>
+) : (
+  <ul class="space-y-4">
+    {reviews.map((review) => (
+      <li class="rounded-2xl border border-luna-200 bg-white p-6 shadow-sm">
+        <div class="flex items-start gap-4">
+          {review.authorAvatar ? (
+            <img src={review.authorAvatar} alt="" class="h-10 w-10 rounded-full object-cover" />
+          ) : (
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-luna-200 text-sm font-semibold text-luna-700">
+              {review.authorName.charAt(0)}
+            </span>
+          )}
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <p class="font-medium text-luna-900">{review.authorName}</p>
+              <span class="text-sm text-lavender-500">{renderStars(review.rating)}</span>
+              <time class="text-xs text-luna-400" datetime={review.createdAt}>
+                {new Date(review.createdAt).toLocaleDateString()}
+              </time>
+            </div>
+            <h4 class="mt-2 font-serif text-lg font-semibold text-luna-900">{review.title}</h4>
+            <p class="mt-2 text-sm leading-relaxed text-luna-600">{review.content}</p>
+            {review.imageUrl && (
+              <img
+                src={review.imageUrl}
+                alt="Review photo"
+                class="mt-4 max-h-64 rounded-xl border border-luna-200 object-cover"
+                loading="lazy"
+              />
+            )}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+)}

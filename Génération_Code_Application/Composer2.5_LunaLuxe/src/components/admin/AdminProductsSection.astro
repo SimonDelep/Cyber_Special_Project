@@ -1,0 +1,212 @@
+---
+import type { Product } from '@/db/schema';
+import { productCategories } from '@/db/schema';
+import FormField from '@/components/FormField.astro';
+import { formatCurrency } from '@/lib/format';
+
+interface Props {
+  products: Product[];
+}
+
+const { products } = Astro.props;
+
+const inputClass =
+  'mt-1 w-full rounded-xl border border-luna-200 bg-luna-50 px-4 py-2.5 text-sm text-luna-900 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-400/20';
+---
+
+<section class="space-y-8">
+  <div>
+    <h2 class="font-serif text-2xl font-semibold text-luna-900">Product catalog</h2>
+    <p class="text-sm text-luna-500">{products.length} product{products.length !== 1 ? 's' : ''}</p>
+  </div>
+
+  <!-- CSV import -->
+  <form
+    action="/api/admin/products/import-csv"
+    method="post"
+    enctype="multipart/form-data"
+    class="rounded-2xl border border-luna-200 bg-white p-6 shadow-sm"
+  >
+    <h3 class="font-serif text-lg font-semibold text-luna-900">Import products from CSV</h3>
+    <p class="mt-1 text-sm text-luna-500">
+      Upload a CSV file to create multiple products at once. Rows with an existing slug are skipped.
+    </p>
+
+    <div class="mt-4 rounded-xl border border-luna-100 bg-luna-50/50 p-4 text-xs text-luna-600">
+      <p class="font-semibold text-luna-800">Required columns</p>
+      <p class="mt-1 font-mono">name, description, price, category, image_url</p>
+      <p class="mt-2 font-semibold text-luna-800">Optional columns</p>
+      <p class="mt-1 font-mono">slug, featured</p>
+      <p class="mt-2">
+        Categories: {productCategories.join(' · ')}
+      </p>
+      <p class="mt-2">
+        <code class="rounded bg-white px-1">featured</code> accepts
+        <code class="rounded bg-white px-1">true</code>,
+        <code class="rounded bg-white px-1">false</code>,
+        <code class="rounded bg-white px-1">1</code>, or
+        <code class="rounded bg-white px-1">0</code>.
+      </p>
+    </div>
+
+    <div class="mt-4 flex flex-wrap items-end gap-4">
+      <div class="min-w-[240px] flex-1">
+        <label for="csv-file" class="block text-sm font-medium text-luna-700">CSV file</label>
+        <input
+          id="csv-file"
+          type="file"
+          name="csv"
+          accept=".csv,text/csv"
+          required
+          class="mt-1 block w-full text-sm text-luna-700 file:mr-4 file:rounded-full file:border-0 file:bg-lavender-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-lavender-700 hover:file:bg-lavender-200"
+        />
+      </div>
+      <button
+        type="submit"
+        class="rounded-full bg-lavender-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-lavender-400"
+      >
+        Import CSV
+      </button>
+      <a
+        href="/samples/products-import-sample.csv"
+        download="products-import-sample.csv"
+        class="rounded-full border border-luna-200 bg-white px-6 py-2.5 text-sm font-semibold text-luna-700 hover:bg-luna-50"
+      >
+        Download sample CSV
+      </a>
+    </div>
+  </form>
+
+  <!-- Create product -->
+  <form
+    action="/api/admin/products/create"
+    method="post"
+    class="rounded-2xl border border-lavender-200 bg-lavender-50/30 p-6 shadow-sm"
+  >
+    <h3 class="font-serif text-lg font-semibold text-luna-900">Add new product</h3>
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <FormField label="Name" name="name" required placeholder="Midnight Silk Sleep Mask" />
+      <FormField label="Slug (optional)" name="slug" placeholder="auto-generated-from-name" />
+      <div class="md:col-span-2">
+        <FormField label="Description" name="description" required rows={3} />
+      </div>
+      <FormField label="Price (CAD)" name="price" type="number" required placeholder="68.00" />
+      <div>
+        <label for="create-category" class="block text-sm font-medium text-luna-700">Category</label>
+        <select id="create-category" name="category" required class={inputClass}>
+          {productCategories.map((c) => (
+            <option value={c}>{c}</option>
+          ))}
+        </select>
+      </div>
+      <div class="md:col-span-2">
+        <FormField label="Image URL" name="imageUrl" required placeholder="https://..." />
+      </div>
+      <label class="flex items-center gap-2 text-sm text-luna-700">
+        <input type="checkbox" name="featured" value="1" class="rounded border-luna-300" />
+        Featured on homepage
+      </label>
+    </div>
+    <button
+      type="submit"
+      class="mt-4 rounded-full bg-luna-800 px-6 py-2.5 text-sm font-semibold text-luna-50 hover:bg-luna-700"
+    >
+      Create product
+    </button>
+  </form>
+
+  <!-- Product list -->
+  <div class="space-y-4">
+    {products.map((p) => (
+      <details class="group overflow-hidden rounded-2xl border border-luna-200 bg-white shadow-sm">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 marker:content-none hover:bg-luna-50/50">
+          <div class="flex items-center gap-4">
+            <img src={p.imageUrl} alt="" class="h-14 w-14 rounded-lg object-cover" />
+            <div>
+              <p class="font-medium text-luna-900">{p.name}</p>
+              <p class="text-xs text-luna-500">{p.category} · /{p.slug}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="font-semibold text-luna-800">{formatCurrency(p.price)}</span>
+            {p.featured && (
+              <span class="rounded-full bg-lavender-100 px-2 py-0.5 text-xs font-semibold text-lavender-700">
+                Featured
+              </span>
+            )}
+            <span class="text-luna-400 transition-transform group-open:rotate-180">▼</span>
+          </div>
+        </summary>
+
+        <div class="space-y-6 border-t border-luna-200 px-6 py-6">
+          <form action="/api/admin/products/update" method="post" class="grid gap-4 md:grid-cols-2">
+            <input type="hidden" name="id" value={p.id} />
+            <FormField label="Name" name="name" value={p.name} required />
+            <FormField label="Slug" name="slug" value={p.slug} required />
+            <div class="md:col-span-2">
+              <FormField label="Description" name="description" value={p.description} required rows={3} />
+            </div>
+            <FormField label="Price (CAD)" name="price" type="number" value={String(p.price)} required />
+            <div>
+              <label for={`cat-${p.id}`} class="block text-sm font-medium text-luna-700">Category</label>
+              <select id={`cat-${p.id}`} name="category" required class={inputClass}>
+                {productCategories.map((c) => (
+                  <option value={c} selected={p.category === c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <FormField label="Image URL" name="imageUrl" value={p.imageUrl} required />
+            </div>
+            <label class="flex items-center gap-2 text-sm text-luna-700">
+              <input
+                type="checkbox"
+                name="featured"
+                value="1"
+                checked={p.featured}
+                class="rounded border-luna-300"
+              />
+              Featured on homepage
+            </label>
+            <div class="flex items-end md:col-span-2">
+              <button
+                type="submit"
+                class="rounded-full bg-luna-800 px-6 py-2.5 text-sm font-semibold text-luna-50 hover:bg-luna-700"
+              >
+                Save product
+              </button>
+            </div>
+          </form>
+
+          <form
+            action="/api/admin/products/delete"
+            method="post"
+            class="rounded-xl border border-red-200 bg-red-50/30 p-4"
+            onsubmit="return confirm('Delete this product permanently?');"
+          >
+            <input type="hidden" name="id" value={p.id} />
+            <p class="text-sm font-medium text-red-900">Delete product</p>
+            <p class="mt-1 text-xs text-red-700">
+              Type <strong>{p.name}</strong> to confirm.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-3">
+              <input
+                type="text"
+                name="confirmName"
+                placeholder={p.name}
+                required
+                class="min-w-[200px] flex-1 rounded-xl border border-red-200 px-4 py-2 text-sm"
+              />
+              <button
+                type="submit"
+                class="rounded-full border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
+              >
+                Delete product
+              </button>
+            </div>
+          </form>
+        </div>
+      </details>
+    ))}
+  </div>
+</section>

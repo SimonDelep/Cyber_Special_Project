@@ -1,0 +1,22 @@
+---
+interface Props {
+  type?: 'error' | 'success' | 'info';
+  message?: string | null;
+}
+
+const { type = 'info', message } = Astro.props;
+---
+
+{message && (
+  <div
+    class:list={[
+      'mb-6 rounded-xl border px-4 py-3 text-sm',
+      type === 'error' && 'border-red-200 bg-red-50 text-red-800',
+      type === 'success' && 'border-green-200 bg-green-50 text-green-800',
+      type === 'info' && 'border-luna-200 bg-luna-100 text-luna-700',
+    ]}
+    role="alert"
+  >
+    {message}
+  </div>
+)}

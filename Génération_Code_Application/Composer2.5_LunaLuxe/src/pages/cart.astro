@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import CartDrawer from '@/components/solid/CartDrawer';
+import CartPage from '@/components/solid/CartPage';
+---
+
+<BaseLayout title="Shopping Cart — LunaLuxe">
+  <Header />
+  <CartDrawer client:load />
+
+  <main class="mx-auto max-w-3xl px-6 pb-24 pt-28">
+    <div class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lavender-500">Your bag</p>
+      <h1 class="mt-2 font-serif text-4xl font-semibold text-luna-900">Shopping cart</h1>
+    </div>
+
+    <CartPage client:load />
+  </main>
+
+  <Footer />
+</BaseLayout>

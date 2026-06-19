@@ -1,0 +1,109 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import ProductGrid from '@/components/ProductGrid.astro';
+import SleepInsights from '@/components/SleepInsights.astro';
+import CartDrawer from '@/components/solid/CartDrawer';
+import { getFeaturedProducts } from '@/lib/products';
+
+const featuredProducts = await getFeaturedProducts();
+---
+
+<BaseLayout>
+  <Header />
+  <CartDrawer client:load />
+
+  <main class="pt-20">
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-luna-100 via-luna-50 to-lavender-300/20" />
+      <div class="relative mx-auto flex max-w-6xl flex-col items-center px-6 py-28 text-center md:py-36">
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-lavender-500">
+          Restful Luxury
+        </p>
+        <h1 class="mt-4 max-w-3xl font-serif text-5xl font-semibold leading-tight text-luna-900 md:text-7xl">
+          Drift into your<br />
+          <span class="italic text-luna-600">best sleep yet</span>
+        </h1>
+        <p class="mt-6 max-w-lg text-lg leading-relaxed text-luna-600">
+          Silk masks, bamboo sheets, and lavender weighted blankets — thoughtfully crafted for nights that feel like a retreat.
+        </p>
+        <div class="mt-10 flex flex-wrap justify-center gap-4">
+          <a
+            href="/catalog"
+            class="rounded-full bg-luna-800 px-8 py-3 text-sm font-semibold text-luna-50 transition-colors hover:bg-luna-700"
+          >
+            Shop the collection
+          </a>
+          <a
+            href="/catalog"
+            class="rounded-full border border-luna-300 px-8 py-3 text-sm font-semibold text-luna-800 transition-colors hover:border-luna-400 hover:bg-luna-100"
+          >
+            Browse catalog
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Collections -->
+    <section id="collections" class="border-y border-luna-200 bg-white py-20">
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="mb-12 text-center">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lavender-500">Collections</p>
+          <h2 class="mt-3 font-serif text-3xl font-semibold text-luna-900 md:text-4xl">
+            Three paths to better rest
+          </h2>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-3">
+          <div class="rounded-2xl border border-luna-200 bg-luna-50 p-8">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-luna-200 text-lg">🌙</div>
+            <h3 class="font-serif text-xl font-semibold text-luna-900">Silk Sleep Masks</h3>
+            <p class="mt-3 text-sm leading-relaxed text-luna-600">
+              Pure mulberry silk that blocks light gently while keeping skin hydrated through the night.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-luna-200 bg-luna-50 p-8">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-luna-200 text-lg">🍃</div>
+            <h3 class="font-serif text-xl font-semibold text-luna-900">Bamboo Sheets</h3>
+            <p class="mt-3 text-sm leading-relaxed text-luna-600">
+              Thermoregulating bamboo lyocell that stays cool in summer and cozy when temperatures drop.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-luna-200 bg-luna-50 p-8">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-luna-200 text-lg">💜</div>
+            <h3 class="font-serif text-xl font-semibold text-luna-900">Weighted Blankets</h3>
+            <p class="mt-3 text-sm leading-relaxed text-luna-600">
+              Lavender-infused glass beads wrapped in breathable cotton for calm, grounded sleep.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <SleepInsights />
+
+    <ProductGrid products={featuredProducts} />
+
+    <!-- CTA -->
+    <section class="bg-luna-900 py-20 text-center">
+      <div class="mx-auto max-w-2xl px-6">
+        <h2 class="font-serif text-3xl font-semibold text-luna-50 md:text-4xl">
+          Your sanctuary awaits
+        </h2>
+        <p class="mt-4 text-luna-300">
+          Free shipping on orders over $150. 30-night comfort guarantee on every purchase.
+        </p>
+        <a
+          href="/catalog"
+          class="mt-8 inline-block rounded-full bg-lavender-500 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-lavender-400"
+        >
+          Start shopping
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

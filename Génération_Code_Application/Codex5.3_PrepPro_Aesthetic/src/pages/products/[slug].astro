@@ -1,0 +1,45 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import ProductDetail from "@/components/products/ProductDetail";
+import { findProductBySlug } from "@/db/products";
+import {
+  findReviewByUserAndProduct,
+  getAverageRating,
+  listReviewsByProductId,
+} from "@/db/reviews";
+
+const { slug } = Astro.params;
+if (!slug) {
+  return Astro.redirect("/catalog");
+}
+
+const product = findProductBySlug(slug);
+if (!product) {
+  return Astro.redirect("/catalog");
+}
+
+const reviews = listReviewsByProductId(product.id);
+const statsRaw = getAverageRating(product.id);
+const stats = {
+  average: Math.round(statsRaw.average * 10) / 10,
+  count: statsRaw.count,
+};
+
+const user = Astro.locals.user;
+const userHasReviewed = user
+  ? Boolean(findReviewByUserAndProduct(user.id, product.id))
+  : false;
+---
+
+<AppLayout title={`${product.name} — PrepPro Aesthetic`}>
+  <main class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <ProductDetail
+      product={product}
+      reviews={reviews}
+      stats={stats}
+      user={user}
+      userHasReviewed={userHasReviewed}
+      client:load
+    />
+  </main>
+</AppLayout>

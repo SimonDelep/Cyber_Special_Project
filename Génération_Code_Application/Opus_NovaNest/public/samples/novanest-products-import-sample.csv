@@ -1,0 +1,6 @@
+name,slug,description,price_cents,category,image,featured
+NovaSense Hub,novasense-hub,Central smart home hub that connects NovaNest cameras and lights in one app.,8999,doorbell-cameras,/images/products/novaring-lite.svg,false
+Garden Cam Pro,garden-cam-pro,Weather-resistant outdoor camera with 2K video and two-week cloud clip history.,19999,doorbell-cameras,/images/products/novaring-pro.svg,true
+LumaDesk Lamp,lumadesk-lamp,LED desk lamp with warm-to-cool tuning and desk-focused brightness presets.,4999,smart-lighting,/images/products/aurabulb-e26.svg,false
+Patio Strip XL,patio-strip-xl,Outdoor-rated RGB LED strip for patios and balconies with scene scheduling.,12999,smart-lighting,/images/products/aurastrip-rgb.svg,true
+Entry Chime Plus,entry-chime-plus,Smart doorbell accessory with customizable chimes and visitor announcements.,3499,doorbell-cameras,/images/products/novaring-lite.svg,false

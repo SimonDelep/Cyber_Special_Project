@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminPanel from '@/components/solid/AdminPanel';
+import { requireAdminPage } from '@/lib/auth/guards';
+
+const admin = requireAdminPage(Astro);
+if (admin instanceof Response) return admin;
+---
+
+<BaseLayout title="Admin Panel — VoltStream" description="Manage users, balances, and products.">
+  <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-volt-400">RBAC · Administrator</p>
+        <h1 class="mt-1 text-3xl font-bold text-white">Admin panel</h1>
+        <p class="mt-2 text-slate-400">
+          Manage users, products, and monitor internal system events (auth, profile, transactions).
+        </p>
+      </div>
+      <a
+        href="/profile"
+        class="inline-flex rounded-full border border-white/15 px-4 py-2 text-sm text-slate-200 hover:bg-white/5"
+      >
+        Back to profile
+      </a>
+    </div>
+
+    <AdminPanel client:load />
+  </section>
+</BaseLayout>

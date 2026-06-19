@@ -1,0 +1,65 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CartPage from "@/components/solid/CartPage";
+import { getCurrentUser } from "@/lib/auth";
+
+export const prerender = false;
+
+const user = getCurrentUser(Astro.cookies);
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+const orderIdParam = Astro.url.searchParams.get("orderId");
+const orderId =
+  orderIdParam && /^\d+$/.test(orderIdParam) ? Number(orderIdParam) : null;
+const invoiceNumber = Astro.url.searchParams.get("invoice");
+---
+
+<BaseLayout title="Cart — ByteMarket" description="Review your cart and checkout.">
+  <section class="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+    <header class="mb-10">
+      <p class="font-mono text-sm uppercase tracking-widest text-accent">Shopping</p>
+      <h1 class="mt-2 text-3xl font-bold tracking-tight">Your cart</h1>
+      <p class="mt-2 text-ink-muted">
+        Pay with store credit on your ByteMarket account.
+      </p>
+    </header>
+
+    {
+      error && (
+        <p class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
+          {error}
+        </p>
+      )
+    }
+    {
+      success && (
+        <div
+          class="mb-6 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-200"
+          role="status"
+        >
+          <p>{success}</p>
+          {
+            orderId && user && (
+              <a
+                href={`/api/invoices/${orderId}`}
+                class="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600/30 px-4 py-2 text-sm font-medium text-emerald-100 ring-1 ring-emerald-500/40 transition hover:bg-emerald-600/40"
+                download={invoiceNumber ? `invoice-${invoiceNumber}.pdf` : undefined}
+              >
+                Download invoice (PDF)
+              </a>
+            )
+          }
+        </div>
+      )
+    }
+
+    <CartPage
+      client:load
+      signedIn={Boolean(user)}
+      balanceCents={user?.balanceCents ?? null}
+      checkoutSuccess={success}
+      lastOrderId={orderId}
+      invoiceNumber={invoiceNumber}
+    />
+  </section>
+</BaseLayout>

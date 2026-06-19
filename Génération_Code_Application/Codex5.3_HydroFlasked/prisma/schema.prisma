@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ProductCategory {
+  TUMBLER
+  GLASSWARE
+  WINE_MUG
+}
+
+enum LogCategory {
+  AUTH
+  PROFILE
+  TRANSACTION
+  ADMIN
+}
+
+enum LogStatus {
+  SUCCESS
+  FAILURE
+  INFO
+}
+
+model User {
+  id              String    @id @default(cuid())
+  username        String    @unique
+  passwordHash    String
+  role            Role      @default(USER)
+  displayName     String?
+  email           String?   @unique
+  profileImageUrl String?
+  balanceCents    Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  sessions        Session[]
+  reviews         Review[]
+  orders          Order[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  description String
+  priceCents  Int
+  category    ProductCategory
+  imageUrl    String?
+  featured    Boolean         @default(false)
+  inStock     Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  reviews     Review[]
+
+  @@index([category])
+  @@index([featured])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  title     String?
+  content   String
+  imageUrl  String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@index([createdAt])
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  invoiceNumber String   @unique
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalCents    Int
+  lineItems     Json
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SystemLog {
+  id        String      @id @default(cuid())
+  category  LogCategory
+  action    String
+  status    LogStatus
+  message   String
+  userId    String?
+  username  String?
+  ipAddress String?
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime    @default(now())
+
+  @@index([category])
+  @@index([action])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+}

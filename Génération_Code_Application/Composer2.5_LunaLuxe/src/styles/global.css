@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-luna-50: #faf8f5;
+  --color-luna-100: #f3ede4;
+  --color-luna-200: #e6d9c8;
+  --color-luna-300: #d4bfaa;
+  --color-luna-400: #b89a7e;
+  --color-luna-500: #9a7b5f;
+  --color-luna-600: #7d6249;
+  --color-luna-700: #654e3c;
+  --color-luna-800: #4f3d30;
+  --color-luna-900: #3d3027;
+  --color-luna-950: #221a15;
+
+  --color-lavender-300: #c4b5fd;
+  --color-lavender-400: #a78bfa;
+  --color-lavender-500: #8b5cf6;
+
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-luna-50);
+  color: var(--color-luna-900);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}

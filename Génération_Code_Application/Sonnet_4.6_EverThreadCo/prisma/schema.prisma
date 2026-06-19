@@ -1,0 +1,157 @@
+// EverThread Co — e-commerce data model
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum EventSeverity {
+  INFO
+  WARN
+  ERROR
+}
+
+enum EventCategory {
+  AUTH
+  PROFILE
+  TRANSACTION
+  CART
+  ADMIN
+  REVIEW
+  SYSTEM
+}
+
+model User {
+  id           String     @id @default(cuid())
+  username     String     @unique
+  email        String     @unique
+  passwordHash String
+  role         Role       @default(USER)
+  displayName  String?
+  bio          String?
+  avatarUrl    String?
+  balanceCents Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  cartItems    CartItem[]
+  reviews      Review[]
+  orders       Order[]
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String
+  priceCents  Int
+  imageUrl    String?
+  featured    Boolean    @default(false)
+  inStock     Boolean    @default(true)
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  cartItems   CartItem[]
+  reviews     Review[]
+
+  @@index([categoryId])
+  @@index([featured])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  rating    Int
+  title     String?
+  body      String
+  imageUrl  String?
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([productId])
+}
+
+model SystemEvent {
+  id        String         @id @default(cuid())
+  category  EventCategory
+  action    String
+  severity  EventSeverity  @default(INFO)
+  message   String
+  userId    String?
+  username  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime       @default(now())
+
+  @@index([category])
+  @@index([action])
+  @@index([severity])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model Order {
+  id                String          @id @default(cuid())
+  orderNumber       String          @unique
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalCents        Int
+  balanceAfterCents Int
+  simulated         Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  items             OrderLineItem[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model OrderLineItem {
+  id             String @id @default(cuid())
+  orderId        String
+  order          Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String
+  productName    String
+  productSlug    String
+  unitPriceCents Int
+  quantity       Int
+  lineTotalCents Int
+
+  @@index([orderId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([userId])
+}

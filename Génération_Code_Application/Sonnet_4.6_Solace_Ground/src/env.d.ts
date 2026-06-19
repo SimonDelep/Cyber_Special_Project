@@ -1,0 +1,9 @@
+/// <reference path="../.astro/types.d.ts" />
+
+import type { PublicUser } from '@/types/auth';
+
+declare namespace App {
+  interface Locals {
+    user: PublicUser | null;
+  }
+}

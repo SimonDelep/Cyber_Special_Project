@@ -1,0 +1,4 @@
+slug,name,description,price,category,featured,inStock,imageUrl
+powerstrap-mini,PowerStrap Mini,Compact magnetic strap charger for on-the-go use.,39.99,WIRELESS_CHARGING,false,true,
+solarflare-5000,SolarFlare 5000,Lightweight 5000 mAh solar charger with USB-C output.,54.99,SOLAR_POWER_BANK,true,true,
+travelhub-case,TravelHub Case,All-in-one tech organizer with padded compartments.,44.99,TRAVEL_ORGANIZER,true,true,

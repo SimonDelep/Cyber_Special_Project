@@ -1,0 +1,35 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import Hero from "@/components/landing/Hero";
+import Features from "@/components/landing/Features";
+import MealInspiration from "@/components/landing/MealInspiration";
+import ProductGrid from "@/components/landing/ProductGrid";
+import ProfessionalsCTA from "@/components/landing/ProfessionalsCTA";
+import { getAllProducts } from "@/db/queries";
+import { fetchRandomMeal } from "@/lib/open-api/themealdb";
+
+let products = [];
+let initialMeal = null;
+
+try {
+  products = getAllProducts();
+} catch {
+  products = [];
+}
+
+try {
+  initialMeal = await fetchRandomMeal();
+} catch {
+  initialMeal = null;
+}
+---
+
+<AppLayout>
+  <main>
+    <Hero client:visible />
+    <Features client:visible />
+    <MealInspiration initialMeal={initialMeal} client:visible />
+    <ProductGrid products={products} client:load />
+    <ProfessionalsCTA client:visible />
+  </main>
+</AppLayout>

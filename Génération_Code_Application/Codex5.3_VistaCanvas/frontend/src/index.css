@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --color-ink: #1a1814;
+  --color-mist: #e8e4dc;
+  --color-fog: #8b9a7a;
+  --color-gold: #c4a574;
+  --color-deep: #2d2922;
+  --color-panel: #f5f2eb;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-ink);
+  color: var(--color-mist);
+  -webkit-font-smoothing: antialiased;
+}

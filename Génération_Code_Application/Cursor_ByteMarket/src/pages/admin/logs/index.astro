@@ -1,0 +1,269 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import {
+  categoryLabel,
+  countSystemLogs,
+  formatLogTimestamp,
+  listSystemLogs,
+  outcomeBadgeClass,
+  parseLogCategory,
+  parseLogOutcome,
+} from "@/lib/audit";
+import type { LogCategory, LogOutcome } from "@/db/schema";
+
+export const prerender = false;
+
+const actor = getAdminActor(Astro.cookies);
+if (!actor) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const categoryFilter = parseLogCategory(Astro.url.searchParams.get("category"));
+const outcomeFilter = parseLogOutcome(Astro.url.searchParams.get("outcome"));
+const eventTypeFilter = Astro.url.searchParams.get("eventType") ?? "";
+
+let logs: ReturnType<typeof listSystemLogs> = [];
+let totalLogs = 0;
+let dbError: string | null = null;
+
+try {
+  logs = listSystemLogs({
+    category: categoryFilter,
+    outcome: outcomeFilter,
+    eventType: eventTypeFilter || undefined,
+    limit: 200,
+  });
+  totalLogs = countSystemLogs();
+} catch (err) {
+  dbError =
+    err instanceof Error ? err.message : "Could not load system logs.";
+}
+
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+
+const categories: { value: "" | LogCategory; label: string }[] = [
+  { value: "", label: "All categories" },
+  { value: "auth", label: "Authentication" },
+  { value: "profile", label: "Profile" },
+  { value: "transaction", label: "Transaction" },
+  { value: "admin", label: "Administration" },
+];
+
+const outcomes: { value: "" | LogOutcome; label: string }[] = [
+  { value: "", label: "All outcomes" },
+  { value: "success", label: "Success" },
+  { value: "failure", label: "Failure" },
+  { value: "info", label: "Info" },
+];
+---
+
+<BaseLayout
+  title="System logs — Admin"
+  description="Internal event log and monitoring for ByteMarket."
+>
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="font-mono text-sm uppercase tracking-widest text-accent">
+          Monitoring
+        </p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight">System log</h1>
+        <p class="mt-2 text-ink-muted">
+          {totalLogs} events recorded — login attempts, profile changes, checkout,
+          and admin actions.
+        </p>
+      </div>
+    </header>
+
+    <AdminNav current="logs" />
+    <AdminAlerts error={error} success={success} />
+
+    {dbError && (
+      <div
+        class="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
+        role="alert"
+      >
+        {dbError} — run <code class="font-mono">npm run db:migrate</code>
+      </div>
+    )}
+
+    <form
+      method="get"
+      action="/admin/logs"
+      class="mb-6 rounded-xl border border-border bg-surface-raised p-4 sm:p-5"
+    >
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <label for="log-category" class="block text-xs font-medium text-ink-muted">
+            Category
+          </label>
+          <select
+            id="log-category"
+            name="category"
+            class="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+          >
+            {
+              categories.map((opt) => (
+                <option
+                  value={opt.value}
+                  selected={categoryFilter === opt.value || (!categoryFilter && !opt.value)}
+                >
+                  {opt.label}
+                </option>
+              ))
+            }
+          </select>
+        </div>
+        <div>
+          <label for="log-outcome" class="block text-xs font-medium text-ink-muted">
+            Outcome
+          </label>
+          <select
+            id="log-outcome"
+            name="outcome"
+            class="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+          >
+            {
+              outcomes.map((opt) => (
+                <option
+                  value={opt.value}
+                  selected={outcomeFilter === opt.value || (!outcomeFilter && !opt.value)}
+                >
+                  {opt.label}
+                </option>
+              ))
+            }
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label for="log-event-type" class="block text-xs font-medium text-ink-muted">
+            Event type prefix
+          </label>
+          <input
+            id="log-event-type"
+            type="text"
+            name="eventType"
+            value={eventTypeFilter}
+            placeholder="e.g. auth.login"
+            class="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+          />
+        </div>
+      </div>
+      <div class="mt-4 flex gap-3">
+        <button
+          type="submit"
+          class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-surface hover:bg-accent-dim"
+        >
+          Apply filters
+        </button>
+        <a
+          href="/admin/logs"
+          class="rounded-lg border border-border px-4 py-2 text-sm text-ink-muted hover:text-ink"
+        >
+          Reset
+        </a>
+      </div>
+    </form>
+
+    <p class="mb-4 text-sm text-ink-muted">
+      Showing {logs.length} most recent matching events
+    </p>
+
+    {
+      logs.length === 0 ? (
+        <p class="rounded-xl border border-dashed border-border p-8 text-center text-ink-muted">
+          No log entries match your filters.
+        </p>
+      ) : (
+        <div class="overflow-x-auto rounded-2xl border border-border bg-surface-raised">
+          <table class="w-full min-w-[720px] text-left text-sm">
+            <thead class="border-b border-border bg-surface-muted/40 text-ink-muted">
+              <tr>
+                <th class="px-4 py-3 font-medium">Time</th>
+                <th class="px-4 py-3 font-medium">Category</th>
+                <th class="px-4 py-3 font-medium">Event</th>
+                <th class="px-4 py-3 font-medium">Outcome</th>
+                <th class="px-4 py-3 font-medium">Actor</th>
+                <th class="px-4 py-3 font-medium">Message</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              {
+                logs.map((entry) => (
+                  <tr class="align-top hover:bg-surface-muted/20">
+                    <td class="whitespace-nowrap px-4 py-3 text-xs text-ink-muted">
+                      {formatLogTimestamp(entry.createdAt)}
+                    </td>
+                    <td class="px-4 py-3">
+                      <span class="text-xs font-medium text-accent">
+                        {categoryLabel(entry.category)}
+                      </span>
+                    </td>
+                    <td class="px-4 py-3">
+                      <code class="rounded bg-surface-muted/60 px-1.5 py-0.5 font-mono text-xs">
+                        {entry.eventType}
+                      </code>
+                    </td>
+                    <td class="px-4 py-3">
+                      <span
+                        class:list={[
+                          "inline-flex rounded-full px-2 py-0.5 text-xs font-medium ring-1",
+                          outcomeBadgeClass(entry.outcome),
+                        ]}
+                      >
+                        {entry.outcome}
+                      </span>
+                    </td>
+                    <td class="px-4 py-3 text-ink-muted">
+                      {
+                        entry.actorUsername ? (
+                          <span>
+                            @{entry.actorUsername}
+                            {entry.actorUserId != null && (
+                              <span class="text-xs"> (#{entry.actorUserId})</span>
+                            )}
+                          </span>
+                        ) : (
+                          <span class="text-xs">—</span>
+                        )
+                      }
+                    </td>
+                    <td class="max-w-md px-4 py-3">
+                      <p class="text-ink">{entry.message}</p>
+                      {
+                        (entry.targetResource || entry.ipAddress) && (
+                          <p class="mt-1 text-xs text-ink-muted">
+                            {entry.targetResource && (
+                              <span class="mr-2">{entry.targetResource}</span>
+                            )}
+                            {entry.ipAddress && <span>IP {entry.ipAddress}</span>}
+                          </p>
+                        )
+                      }
+                      {
+                        entry.metadata && (
+                          <details class="mt-2">
+                            <summary class="cursor-pointer text-xs text-accent">
+                              Metadata
+                            </summary>
+                            <pre class="mt-1 overflow-x-auto rounded bg-surface-muted/50 p-2 font-mono text-xs text-ink-muted">
+                              {entry.metadata}
+                            </pre>
+                          </details>
+                        )
+                      }
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+  </section>
+</BaseLayout>

@@ -1,0 +1,38 @@
+{
+  "name": "novanest",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/lib/db/migrate.ts",
+    "db:seed": "tsx src/lib/db/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.2.1",
+    "@astrojs/solid-js": "^5.0.5",
+    "@nanostores/solid": "^0.5.0",
+    "astro": "^5.7.10",
+    "bcryptjs": "^3.0.2",
+    "nanostores": "^0.11.4",
+    "pdf-lib": "^1.17.1",
+    "solid-js": "^1.9.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.4",
+    "@types/bcryptjs": "^2.4.6",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.45.2",
+    "tailwindcss": "^4.1.4",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

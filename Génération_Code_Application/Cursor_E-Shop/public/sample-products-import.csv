@@ -1,0 +1,4 @@
+name,slug,description,price,imageUrl,category,stock
+E-Shop Demo Keyboard,eshop-demo-keyboard,"Mechanical keyboard for CSV import test.",79.99,https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400,accessories,25
+E-Shop Demo Webcam,eshop-demo-webcam,"1080p webcam with built-in microphone.",59.99,https://images.unsplash.com/photo-1587826080690-f6868a40714c?w=400,accessories,40
+E-Shop Demo Charger,eshop-demo-charger,"65W USB-C fast charger.",34.99,,accessories,100

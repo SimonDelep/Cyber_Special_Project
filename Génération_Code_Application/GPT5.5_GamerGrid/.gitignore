@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+.astro/
+
+# uploads
+public/uploads/
+
+# database
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# env
+.env
+.env.*
+
+# logs & OS
+*.log
+.DS_Store
+Thumbs.db

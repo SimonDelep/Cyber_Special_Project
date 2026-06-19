@@ -1,0 +1,5 @@
+name,slug,description,price,category,imageUrl,inStock,featured
+"Forest Moss Candle",forest-moss-candle,"Earthy moss and pine needle soy candle with a wooden wick. 40-hour burn.",39.00,CANDLES,,true,true
+"River Stone Incense Holder",river-stone-incense-holder,"Raw concrete holder inspired by river stones. Fits standard incense sticks.",29.50,INCENSE_HOLDERS,,true,false
+"Citrus Grove Diffuser",citrus-grove-diffuser,"Ultrasonic diffuser with lemon and grapefruit essential oil blend included.",62.00,DIFFUSERS,,true,false
+"Evening Ember Candle",,"Warm amber and smoked vanilla in a recycled glass jar. Slug auto-generated if left empty.",41.00,CANDLES,,true,false

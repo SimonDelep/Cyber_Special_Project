@@ -1,0 +1,38 @@
+{
+  "name": "voltstream",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx scripts/db-seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.2.0",
+    "@astrojs/solid-js": "^6.0.1",
+    "@nanostores/solid": "^0.5.0",
+    "@tailwindcss/vite": "^4.1.7",
+    "@types/pdfkit": "^0.17.6",
+    "astro": "^5.7.10",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.11.1",
+    "drizzle-orm": "^0.43.1",
+    "nanoid": "^5.1.5",
+    "nanostores": "^0.11.1",
+    "pdfkit": "^0.18.0",
+    "solid-js": "^1.9.6",
+    "tailwindcss": "^4.1.7"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.13",
+    "drizzle-kit": "^0.31.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

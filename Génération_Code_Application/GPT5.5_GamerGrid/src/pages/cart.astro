@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CartPage from '@/components/solid/CartPage';
+
+const user = Astro.locals.user;
+---
+
+<BaseLayout title="Shopping cart — VoltStream" description="Review your cart and checkout with your account balance.">
+  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-white">Shopping cart</h1>
+      <p class="mt-2 text-slate-400">
+        Review your items and pay with your VoltStream account balance.
+      </p>
+    </div>
+
+    <CartPage
+      isLoggedIn={!!user}
+      initialBalance={user?.balance ?? null}
+      client:load
+    />
+  </section>
+</BaseLayout>

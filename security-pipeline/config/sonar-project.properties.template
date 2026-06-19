@@ -1,0 +1,6 @@
+sonar.projectKey={{SONAR_KEY}}
+sonar.projectName={{APP_NAME}}
+sonar.projectVersion=1.0
+sonar.sources={{SOURCES}}
+sonar.exclusions={{EXCLUSIONS}}
+sonar.sourceEncoding=UTF-8

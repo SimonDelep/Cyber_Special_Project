@@ -1,0 +1,138 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import { CSV_COLUMNS, REQUIRED_CSV_COLUMNS } from "@/lib/admin/product-csv";
+import { listCategoriesForSelect } from "@/lib/admin/products";
+import { getAdminActor } from "@/lib/admin/guard";
+
+export const prerender = false;
+
+if (!getAdminActor(Astro.cookies)) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const categories = listCategoriesForSelect();
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+const createdCount = Astro.url.searchParams.get("created");
+const failedCount = Astro.url.searchParams.get("failed");
+---
+
+<BaseLayout title="Import products — Admin" description="Bulk import products from CSV.">
+  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <header class="mb-8">
+      <p class="font-mono text-sm uppercase tracking-widest text-accent">Administration</p>
+      <h1 class="mt-2 text-3xl font-bold tracking-tight">Import products (CSV)</h1>
+      <p class="mt-2 text-ink-muted">
+        Upload a comma-separated file to create many catalog items at once.
+      </p>
+    </header>
+
+    <AdminNav current="products" />
+    <AdminAlerts error={error} success={success} />
+
+    {
+      createdCount && (
+        <p class="mb-6 text-sm text-ink-muted">
+          Last import: <span class="text-emerald-300">{createdCount} created</span>
+          {
+            failedCount && Number(failedCount) > 0 && (
+              <span>, <span class="text-amber-300">{failedCount} failed</span></span>
+            )
+          }
+        </p>
+      )
+    }
+
+    <div class="mb-8 rounded-2xl border border-border bg-surface-raised p-6">
+      <h2 class="text-lg font-semibold">CSV format</h2>
+      <p class="mt-2 text-sm text-ink-muted">
+        The first row must be a header. Required columns are marked with *.
+      </p>
+      <ul class="mt-4 space-y-2 font-mono text-xs text-ink-muted">
+        {
+          CSV_COLUMNS.map((col) => (
+            <li>
+              <span class="text-accent">{col}</span>
+              {
+                (REQUIRED_CSV_COLUMNS as readonly string[]).includes(col) ? (
+                  <span class="text-amber-300"> *</span>
+                ) : (
+                  <span class="text-ink-muted/60"> (optional)</span>
+                )
+              }
+            </li>
+          ))
+        }
+      </ul>
+      <dl class="mt-6 space-y-3 text-sm text-ink-muted">
+        <div>
+          <dt class="font-medium text-ink">price</dt>
+          <dd>Amount in CAD (e.g. <code class="font-mono">129.99</code>)</dd>
+        </div>
+        <div>
+          <dt class="font-medium text-ink">category_slug</dt>
+          <dd>
+            One of:
+            {
+              categories.length > 0
+                ? categories.map((c) => c.slug).join(", ")
+                : "run db:seed first"
+            }
+          </dd>
+        </div>
+        <div>
+          <dt class="font-medium text-ink">featured</dt>
+          <dd><code class="font-mono">true</code> / <code class="font-mono">false</code> (default false)</dd>
+        </div>
+        <div>
+          <dt class="font-medium text-ink">slug</dt>
+          <dd>Must be unique; lowercase letters, numbers, and hyphens only.</dd>
+        </div>
+      </dl>
+      <a
+        href="/samples/products-import-sample.csv"
+        download="products-import-sample.csv"
+        class="mt-6 inline-flex rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20"
+      >
+        Download sample CSV
+      </a>
+    </div>
+
+    <form
+      method="post"
+      action="/api/admin/products/import"
+      enctype="multipart/form-data"
+      class="rounded-2xl border border-border bg-surface-raised p-6"
+    >
+      <h2 class="text-lg font-semibold">Upload file</h2>
+      <p class="mt-1 text-sm text-ink-muted">Max 512 KB. UTF-8 encoding recommended.</p>
+      <div class="mt-5">
+        <label for="csv_file" class="block text-sm font-medium text-ink">CSV file</label>
+        <input
+          id="csv_file"
+          type="file"
+          name="csv_file"
+          accept=".csv,text/csv"
+          required
+          class="mt-2 w-full text-sm text-ink-muted file:mr-4 file:rounded-lg file:border-0 file:bg-accent/15 file:px-4 file:py-2 file:text-sm file:font-medium file:text-accent"
+        />
+      </div>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button
+          type="submit"
+          class="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-surface transition hover:bg-accent-dim"
+        >
+          Import products
+        </button>
+        <a
+          href="/admin/products"
+          class="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-ink-muted transition hover:text-ink"
+        >
+          Back to products
+        </a>
+      </div>
+    </form>
+  </section>
+</BaseLayout>

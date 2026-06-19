@@ -1,0 +1,90 @@
+---
+import CartLink from '@/components/cart/CartLink.astro';
+import LogoutButton from '@/components/solid/LogoutButton';
+import type { PublicUser } from '@/lib/auth/types';
+import { isAdmin } from '@/lib/auth/rbac';
+
+interface Props {
+  user: PublicUser | null;
+}
+
+const { user } = Astro.props;
+
+const avatarSrc = user?.profilePicture ??
+  (user ? `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName)}&background=339dff&color=fff` : null);
+---
+
+<header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-lg">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4 sm:px-6">
+    <a href="/" class="group flex items-center gap-2">
+      <span
+        class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-volt-500 to-stream-500 text-sm font-bold text-white shadow-lg shadow-volt-600/30"
+        aria-hidden="true"
+      >
+        VS
+      </span>
+      <span class="text-lg font-semibold tracking-tight text-white group-hover:text-volt-300 transition-colors">
+        VoltStream
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-8 text-sm text-slate-300 md:flex" aria-label="Main">
+      <a href="/catalog" class="hover:text-white transition-colors">Catalog</a>
+      <a href="/#products" class="hover:text-white transition-colors">Featured</a>
+      <a href="/#categories" class="hover:text-white transition-colors">Categories</a>
+      <a href="/#why" class="hover:text-white transition-colors">Why VoltStream</a>
+      {isAdmin(user) && (
+        <a href="/admin" class="font-medium text-volt-400 hover:text-volt-300 transition-colors">Admin</a>
+      )}
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <CartLink />
+
+      {user ? (
+        <div class="flex items-center gap-2">
+          <a
+            href="/profile"
+            class="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 py-1.5 pl-1.5 pr-3 text-sm text-slate-200 hover:bg-white/10 transition-colors"
+          >
+            {avatarSrc && (
+              <img
+                src={avatarSrc}
+                alt=""
+                class="h-7 w-7 rounded-full object-cover"
+                width={28}
+                height={28}
+              />
+            )}
+            <span class="hidden max-w-[8rem] truncate sm:inline">{user.displayName}</span>
+          </a>
+          <div class="hidden sm:block">
+            <LogoutButton client:load />
+          </div>
+        </div>
+      ) : (
+        <>
+          <a
+            href="/login"
+            class="rounded-full border border-white/15 px-3 py-2 text-sm text-slate-200 hover:bg-white/5 transition-colors"
+          >
+            Sign in
+          </a>
+          <a
+            href="/register"
+            class="hidden rounded-full bg-volt-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-volt-900/40 hover:bg-volt-500 transition-colors sm:inline-flex"
+          >
+            Register
+          </a>
+        </>
+      )}
+
+      <a
+        href="/catalog"
+        class="hidden rounded-full bg-volt-600 px-4 py-2 text-sm font-medium text-white shadow-md shadow-volt-900/40 hover:bg-volt-500 transition-colors lg:inline-flex"
+      >
+        Shop now
+      </a>
+    </div>
+  </div>
+</header>

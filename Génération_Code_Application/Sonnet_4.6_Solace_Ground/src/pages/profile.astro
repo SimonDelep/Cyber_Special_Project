@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import ProfileForm from '@/components/solid/ProfileForm';
+
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/login?next=/profile');
+}
+---
+
+<BaseLayout title="Your profile — Solace Ground">
+  <Header user={user} />
+  <main class="flex-1">
+    <div class="mx-auto max-w-xl px-6 py-16">
+      <h1 class="font-serif text-3xl text-cork-900">Your profile</h1>
+      <p class="mt-2 text-cork-600">View and update your account details.</p>
+      <div class="mt-10">
+        <ProfileForm client:load initialUser={user} />
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

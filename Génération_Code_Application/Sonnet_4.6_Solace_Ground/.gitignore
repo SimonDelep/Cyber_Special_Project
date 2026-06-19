@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+.astro/
+
+# database
+data/*.db
+data/*.db-journal
+
+# uploaded avatars (keep directory via .gitkeep)
+public/uploads/avatars/*
+!public/uploads/avatars/.gitkeep
+public/uploads/reviews/*
+!public/uploads/reviews/.gitkeep
+
+# env
+.env
+.env.local
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

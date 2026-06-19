@@ -1,0 +1,64 @@
+---
+import type { ProductDTO } from '@/lib/types';
+
+interface Props {
+  products: ProductDTO[];
+}
+
+const { products } = Astro.props;
+---
+
+<div id="product-catalog" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  {
+    products.map((product) => (
+      <article class="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 shadow-xl shadow-black/20 transition hover:border-volt-500/40">
+        <div class="relative flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 p-8">
+          <img
+            src={product.image}
+            alt=""
+            class="h-28 w-28 object-contain opacity-90 transition group-hover:scale-105"
+            loading="lazy"
+            width="112"
+            height="112"
+          />
+          {product.badge && (
+            <span class="absolute left-3 top-3 rounded-full bg-volt-600/90 px-2.5 py-1 text-xs font-medium text-white">
+              {product.badge}
+            </span>
+          )}
+        </div>
+        <div class="flex flex-1 flex-col gap-3 p-5">
+          <p class="text-xs font-medium uppercase tracking-wider text-stream-400">
+            {product.categoryName}
+          </p>
+          <h3 class="text-lg font-semibold text-white">{product.name}</h3>
+          <p class="flex-1 text-sm leading-relaxed text-slate-400">
+            {product.description}
+          </p>
+          <div class="flex flex-col items-end gap-1 pt-2 sm:flex-row sm:items-center sm:justify-between">
+            <p class="w-full text-xl font-semibold text-white sm:w-auto">
+              ${product.price.toFixed(2)}
+            </p>
+            <div class="flex flex-col items-end gap-1">
+              <button
+                type="button"
+                data-add-cart
+                data-product-id={product.id}
+                data-product-name={product.name}
+                data-product-price={product.price}
+                class="rounded-full bg-volt-600 px-4 py-2 text-sm font-medium text-white hover:bg-volt-500 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400 transition-colors"
+              >
+                Add to cart
+              </button>
+              <span
+                class="hidden text-xs font-medium text-stream-400"
+                data-cart-feedback
+                role="status"
+              />
+            </div>
+          </div>
+        </div>
+      </article>
+    ))
+  }
+</div>

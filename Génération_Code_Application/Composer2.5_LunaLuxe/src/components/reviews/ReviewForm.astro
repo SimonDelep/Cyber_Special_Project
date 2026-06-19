@@ -1,0 +1,82 @@
+---
+import type { Review } from '@/db/schema';
+import FormField from '@/components/FormField.astro';
+
+interface Props {
+  productSlug: string;
+  existingReview?: Review;
+}
+
+const { productSlug, existingReview } = Astro.props;
+
+const inputClass =
+  'mt-1 w-full rounded-xl border border-luna-200 bg-luna-50 px-4 py-2.5 text-sm text-luna-900 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-400/20';
+---
+
+<form
+  action="/api/reviews/submit"
+  method="post"
+  enctype="multipart/form-data"
+  class="rounded-2xl border border-luna-200 bg-white p-6 shadow-sm"
+>
+  <h3 class="font-serif text-xl font-semibold text-luna-900">
+    {existingReview ? 'Update your review' : 'Write a review'}
+  </h3>
+  <p class="mt-1 text-sm text-luna-500">Share your experience with this product.</p>
+
+  <input type="hidden" name="productSlug" value={productSlug} />
+
+  <div class="mt-5 space-y-4">
+    <div>
+      <label for="rating" class="block text-sm font-medium text-luna-700">Rating</label>
+      <select id="rating" name="rating" required class={inputClass}>
+        {[5, 4, 3, 2, 1].map((n) => (
+          <option value={n} selected={existingReview?.rating === n}>
+            {n} — {n === 5 ? 'Excellent' : n === 4 ? 'Good' : n === 3 ? 'Average' : n === 2 ? 'Fair' : 'Poor'}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <FormField label="Title" name="title" value={existingReview?.title ?? ''} required placeholder="Summarize your experience" />
+    <FormField label="Review" name="content" value={existingReview?.content ?? ''} required rows={5} placeholder="What did you love about this product?" />
+
+    <div>
+      <label for="imageUrl" class="block text-sm font-medium text-luna-700">Photo URL (optional)</label>
+      <input
+        type="url"
+        id="imageUrl"
+        name="imageUrl"
+        value={existingReview?.imageUrl?.startsWith('http') ? existingReview.imageUrl : ''}
+        placeholder="https://example.com/photo.jpg"
+        class={inputClass}
+      />
+    </div>
+
+    <div>
+      <label for="imageFile" class="block text-sm font-medium text-luna-700">Or upload a photo</label>
+      <input
+        type="file"
+        id="imageFile"
+        name="imageFile"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        class="mt-1 block w-full text-sm text-luna-600 file:mr-4 file:rounded-full file:border-0 file:bg-luna-200 file:px-4 file:py-2 file:text-sm file:font-medium file:text-luna-800 hover:file:bg-luna-300"
+      />
+      <p class="mt-1 text-xs text-luna-500">JPEG, PNG, WebP, or GIF — max 2 MB</p>
+    </div>
+
+    {existingReview?.imageUrl && (
+      <label class="flex items-center gap-2 text-sm text-luna-600">
+        <input type="checkbox" name="clearImage" value="1" class="rounded border-luna-300" />
+        Remove current photo
+      </label>
+    )}
+  </div>
+
+  <button
+    type="submit"
+    class="mt-6 rounded-full bg-lavender-500 px-8 py-3 text-sm font-semibold text-white hover:bg-lavender-400"
+  >
+    {existingReview ? 'Update review' : 'Submit review'}
+  </button>
+</form>

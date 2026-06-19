@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminPanel from '../../components/solid/AdminPanel';
+import { listUsers } from '../../lib/db/users';
+import { getAllProducts } from '../../lib/db/products';
+
+const admin = Astro.locals.user!;
+const users = listUsers();
+const products = getAllProducts();
+---
+
+<BaseLayout title="Admin — NovaNest" description="NovaNest administration.">
+  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <AdminPanel
+      client:load
+      initialUsers={users}
+      initialProducts={products}
+      currentAdminId={admin.id}
+    />
+  </section>
+</BaseLayout>

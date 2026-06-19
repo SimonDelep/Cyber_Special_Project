@@ -1,0 +1,86 @@
+---
+import ProfileAvatar from "@/components/profile/ProfileAvatar.astro";
+import { starsForRating } from "@/lib/stars";
+import type { ProductReviewView } from "@/lib/reviews";
+
+interface Props {
+  reviews: ProductReviewView[];
+}
+
+const { reviews } = Astro.props;
+
+function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+---
+
+{
+  reviews.length === 0 ? (
+    <p class="rounded-xl border border-dashed border-border p-8 text-center text-sm text-ink-muted">
+      No reviews yet. Be the first to share your experience.
+    </p>
+  ) : (
+    <ul class="space-y-4">
+      {reviews.map((review) => (
+        <li>
+          <article class="rounded-xl border border-border bg-surface-raised p-5">
+            <div class="flex gap-4">
+              <ProfileAvatar
+                username={review.username}
+                displayName={review.displayName}
+                avatarUrl={review.avatarUrl}
+                size="sm"
+              />
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <p class="font-medium text-ink">
+                    {review.displayName?.trim() || review.username}
+                  </p>
+                  <span class="text-xs text-ink-muted">
+                    @{review.username}
+                  </span>
+                  <time
+                    class="text-xs text-ink-muted"
+                    datetime={review.createdAt.toISOString()}
+                  >
+                    {formatDate(review.createdAt)}
+                  </time>
+                </div>
+                <p
+                  class="mt-1 font-mono text-sm text-amber-300/90"
+                  aria-label={`${review.rating} out of 5 stars`}
+                >
+                  {starsForRating(review.rating)}
+                </p>
+                {review.title && (
+                  <h4 class="mt-2 font-semibold text-ink">{review.title}</h4>
+                )}
+                <p class="mt-2 whitespace-pre-wrap text-sm text-ink-muted">
+                  {review.body}
+                </p>
+                {review.imageUrl && (
+                  <a
+                    href={review.imageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mt-4 inline-block"
+                  >
+                    <img
+                      src={review.imageUrl}
+                      alt="Review attachment"
+                      class="max-h-64 max-w-full rounded-lg border border-border object-cover"
+                      loading="lazy"
+                    />
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        </li>
+      ))}
+    </ul>
+  )
+}

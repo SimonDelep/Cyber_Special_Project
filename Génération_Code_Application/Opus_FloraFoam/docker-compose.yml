@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: florafoam-db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: florafoam
+      POSTGRES_PASSWORD: florafoam
+      POSTGRES_DB: florafoam
+    volumes:
+      - florafoam_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U florafoam -d florafoam"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  florafoam_pg_data:

@@ -1,0 +1,289 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import FormField from "@/components/auth/FormField.astro";
+import ProfileAvatar from "@/components/profile/ProfileAvatar.astro";
+import { AVATAR_MAX_BYTES } from "@/lib/avatar";
+import { getCurrentUser, PASSWORD_MIN } from "@/lib/auth";
+import { listRecentOrdersForUser } from "@/lib/orders";
+import { formatPrice } from "@/lib/products";
+
+export const prerender = false;
+
+const user = getCurrentUser(Astro.cookies);
+if (!user) {
+  return Astro.redirect("/login?redirect=/profile");
+}
+
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+const maxSizeMb = AVATAR_MAX_BYTES / (1024 * 1024);
+
+const memberSince = user.createdAt.toLocaleDateString("en-CA", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+let recentOrders: ReturnType<typeof listRecentOrdersForUser> = [];
+try {
+  recentOrders = listRecentOrdersForUser(user.id, 8);
+} catch {
+  recentOrders = [];
+}
+---
+
+<BaseLayout title="Profile — ByteMarket" description="Manage your ByteMarket profile.">
+  <section class="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+    <header class="mb-10 flex flex-col gap-6 sm:flex-row sm:items-center">
+      <ProfileAvatar
+        username={user.username}
+        displayName={user.displayName}
+        avatarUrl={user.avatarUrl}
+        size="lg"
+      />
+      <div>
+        <p class="font-mono text-sm uppercase tracking-widest text-accent">Account</p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight">Your profile</h1>
+        <p class="mt-2 text-ink-muted">
+          Signed in as <span class="font-medium text-ink">@{user.username}</span>
+          {user.role === "admin" && (
+            <span class="ml-2 rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
+              Admin
+            </span>
+          )}
+        </p>
+      </div>
+    </header>
+
+    {
+      error && (
+        <p class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
+          {error}
+        </p>
+      )
+    }
+    {
+      success && (
+        <p class="mb-6 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200" role="status">
+          {success}
+        </p>
+      )
+    }
+
+    <div class="mb-8 rounded-2xl border border-border bg-surface-raised p-6">
+      <p class="text-sm text-ink-muted">Store credit</p>
+      <p class="mt-1 text-2xl font-bold font-mono">{formatPrice(user.balanceCents)}</p>
+      {
+        user.role === "admin" && (
+          <a href="/admin" class="mt-3 inline-block text-sm font-medium text-accent hover:underline">
+            Open admin panel →
+          </a>
+        )
+      }
+    </div>
+
+    {
+      recentOrders.length > 0 && (
+        <div class="mb-8 rounded-2xl border border-border bg-surface-raised p-6">
+          <h2 class="text-lg font-semibold">Recent orders</h2>
+          <p class="mt-1 text-sm text-ink-muted">
+            Download PDF invoices for past purchases.
+          </p>
+          <ul class="mt-4 divide-y divide-border">
+            {recentOrders.map((order) => (
+              <li class="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <div>
+                  <p class="font-mono text-sm font-medium">{order.invoiceNumber}</p>
+                  <p class="text-xs text-ink-muted">
+                    {order.createdAt.toLocaleDateString("en-CA", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}{" "}
+                    · {formatPrice(order.totalCents)}
+                  </p>
+                </div>
+                <a
+                  href={`/api/invoices/${order.id}`}
+                  class="rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-sm font-medium text-accent transition hover:bg-accent/20"
+                  download={`invoice-${order.invoiceNumber}.pdf`}
+                >
+                  PDF invoice
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+
+    <div class="space-y-8">
+      <article class="rounded-2xl border border-border bg-surface-raised p-6">
+        <h2 class="text-lg font-semibold">Profile picture</h2>
+        <p class="mt-1 text-sm text-ink-muted">
+          Use an external image URL or upload a file from your device (max {maxSizeMb} MB).
+        </p>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="text-sm font-medium">From URL</h3>
+            <p class="mt-1 text-xs text-ink-muted">Paste a direct link to a JPEG, PNG, WebP, or GIF.</p>
+            <form method="post" action="/api/profile/avatar" class="mt-4 space-y-4">
+              <FormField
+                id="avatar_url"
+                name="avatar_url"
+                label="Image URL"
+                type="url"
+                value={user.avatarUrl?.startsWith("http") ? user.avatarUrl : ""}
+                placeholder="https://example.com/photo.jpg"
+              />
+              <button
+                type="submit"
+                class="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20"
+              >
+                Save URL
+              </button>
+            </form>
+          </div>
+
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="text-sm font-medium">Upload file</h3>
+            <p class="mt-1 text-xs text-ink-muted">Choose an image from your computer.</p>
+            <form
+              method="post"
+              action="/api/profile/avatar"
+              enctype="multipart/form-data"
+              class="mt-4 space-y-4"
+            >
+              <div>
+                <label for="avatar_file" class="mb-1.5 block text-sm font-medium text-ink">
+                  Image file
+                </label>
+                <input
+                  id="avatar_file"
+                  name="avatar_file"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  required
+                  class="w-full rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-ink file:mr-3 file:rounded-md file:border-0 file:bg-accent/15 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-accent"
+                />
+              </div>
+              <button
+                type="submit"
+                class="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20"
+              >
+                Upload picture
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {
+          user.avatarUrl && (
+            <form method="post" action="/api/profile/avatar" class="mt-6 border-t border-border pt-6">
+              <input type="hidden" name="action" value="remove" />
+              <button
+                type="submit"
+                class="rounded-lg border border-border px-4 py-2 text-sm text-ink-muted transition hover:border-red-500/40 hover:text-red-200"
+              >
+                Remove profile picture
+              </button>
+            </form>
+          )
+        }
+      </article>
+
+      <article class="rounded-2xl border border-border bg-surface-raised p-6">
+        <h2 class="text-lg font-semibold">Account details</h2>
+        <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+          <div>
+            <dt class="text-ink-muted">Username</dt>
+            <dd class="font-medium">{user.username}</dd>
+          </div>
+          <div>
+            <dt class="text-ink-muted">Role</dt>
+            <dd class="font-medium capitalize">{user.role}</dd>
+          </div>
+          <div>
+            <dt class="text-ink-muted">Member since</dt>
+            <dd class="font-medium">{memberSince}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="rounded-2xl border border-border bg-surface-raised p-6">
+        <h2 class="text-lg font-semibold">Edit profile</h2>
+        <p class="mt-1 text-sm text-ink-muted">Update your display name, email, or password.</p>
+        <form method="post" action="/api/profile/update" class="mt-6 space-y-5">
+          <FormField
+            id="display_name"
+            name="display_name"
+            label="Display name"
+            value={user.displayName ?? ""}
+            autocomplete="name"
+          />
+          <FormField
+            id="email"
+            name="email"
+            label="Email"
+            type="email"
+            value={user.email ?? ""}
+            autocomplete="email"
+          />
+          <hr class="border-border" />
+          <p class="text-sm text-ink-muted">Leave blank to keep your current password.</p>
+          <FormField
+            id="current_password"
+            name="current_password"
+            label="Current password"
+            type="password"
+            autocomplete="current-password"
+          />
+          <FormField
+            id="new_password"
+            name="new_password"
+            label="New password"
+            type="password"
+            autocomplete="new-password"
+            minlength={PASSWORD_MIN}
+          />
+          <button
+            type="submit"
+            class="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-surface transition hover:bg-accent-dim"
+          >
+            Save changes
+          </button>
+        </form>
+      </article>
+
+      <article class="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
+        <h2 class="text-lg font-semibold text-red-200">Delete account</h2>
+        <p class="mt-1 text-sm text-ink-muted">
+          Permanently remove your account and all sessions. This cannot be undone.
+        </p>
+        <form method="post" action="/api/profile/delete" class="mt-6 space-y-5">
+          <FormField
+            id="password"
+            name="password"
+            label="Confirm with your password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+          <FormField
+            id="confirm"
+            name="confirm"
+            label='Type "DELETE" to confirm'
+            required
+            placeholder="DELETE"
+          />
+          <button
+            type="submit"
+            class="rounded-lg border border-red-500/40 bg-red-500/10 px-5 py-2.5 text-sm font-medium text-red-200 transition hover:bg-red-500/20"
+          >
+            Delete my account
+          </button>
+        </form>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

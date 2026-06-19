@@ -1,0 +1,4 @@
+slug,name,description,category,price_dollars,image_url,origin,roast_level,is_ethical,is_active
+honduras-marcala-whole-bean,Honduras Marcala Whole Bean,"Chocolate and hazelnut notes from a cooperative in Marcala. Balanced and sweet as espresso or drip.",COFFEE,21.99,https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&q=80,Honduras,Medium,true,true
+chamomile-mint-blend,Chamomile Mint Blend,"A calming blend of Egyptian chamomile and spearmint leaves for evening rituals.",TEA,17.49,https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800&q=80,Egypt,,true,true
+decaf-swiss-water,Decaf Swiss Water Process,"Swiss Water decaffeinated beans with full flavor — caramel and mild citrus without the caffeine.",COFFEE,23.50,,Colombia,Medium-Dark,true,true

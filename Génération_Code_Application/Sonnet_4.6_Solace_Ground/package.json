@@ -1,0 +1,40 @@
+{
+  "name": "solace-ground",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx src/db/migrate.ts && tsx src/db/seed.ts",
+    "db:create-admin": "tsx scripts/create-admin.ts",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.2.0",
+    "@astrojs/solid-js": "^5.1.0",
+    "@nanostores/solid": "^0.5.0",
+    "@tailwindcss/vite": "^4.1.8",
+    "astro": "^5.7.10",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.11.1",
+    "drizzle-orm": "^0.43.1",
+    "nanostores": "^0.11.4",
+    "pdfkit": "^0.18.0",
+    "solid-js": "^1.9.5",
+    "tailwindcss": "^4.1.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/pdfkit": "^0.17.6",
+    "drizzle-kit": "^0.30.6",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

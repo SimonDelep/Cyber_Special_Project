@@ -1,0 +1,108 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CatalogFilters from "@/components/catalog/CatalogFilters.astro";
+import ProductCard from "@/components/catalog/ProductCard.astro";
+import {
+  getCategories,
+  parseCatalogSort,
+  parsePriceDollarsToCents,
+  searchCatalogProducts,
+} from "@/lib/products";
+
+export const prerender = false;
+
+const q = Astro.url.searchParams.get("q") ?? "";
+const category = Astro.url.searchParams.get("category") ?? "";
+const minPrice = Astro.url.searchParams.get("minPrice") ?? "";
+const maxPrice = Astro.url.searchParams.get("maxPrice") ?? "";
+const inStockOnly = Astro.url.searchParams.get("inStock") === "1";
+const sort = parseCatalogSort(Astro.url.searchParams.get("sort"));
+
+let categories: Awaited<ReturnType<typeof getCategories>> = [];
+let products: Awaited<ReturnType<typeof searchCatalogProducts>> = [];
+let dbError: string | null = null;
+
+try {
+  categories = await getCategories();
+  products = await searchCatalogProducts({
+    q: q || undefined,
+    category: category || undefined,
+    minPriceCents: parsePriceDollarsToCents(minPrice) ?? undefined,
+    maxPriceCents: parsePriceDollarsToCents(maxPrice) ?? undefined,
+    inStockOnly,
+    sort,
+  });
+} catch (err) {
+  dbError =
+    err instanceof Error
+      ? err.message
+      : "Database unavailable. Run npm run db:setup.";
+}
+---
+
+<BaseLayout
+  title="Catalog — ByteMarket"
+  description="Search and filter ByteMarket electronics — CPUs, GPUs, peripherals, storage, and networking."
+>
+  <div class="border-b border-border bg-surface-raised/40 py-10 sm:py-12">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <p class="font-mono text-sm uppercase tracking-widest text-accent">
+        Product catalog
+      </p>
+      <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+        Browse &amp; filter
+      </h1>
+      <p class="mt-2 max-w-2xl text-ink-muted">
+        Search by name, filter by category and price, and open any product for
+        details and customer reviews.
+      </p>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+    {dbError && (
+      <div
+        class="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
+        role="alert"
+      >
+        {dbError} — <code class="font-mono">npm run db:setup</code>
+      </div>
+    )}
+
+    <CatalogFilters
+      categories={categories}
+      q={q}
+      category={category}
+      minPrice={minPrice}
+      maxPrice={maxPrice}
+      inStockOnly={inStockOnly}
+      sort={sort}
+    />
+
+    <p class="mt-8 text-sm text-ink-muted">
+      {products.length === 0
+        ? "No products match your filters."
+        : `${products.length} product${products.length === 1 ? "" : "s"} found`}
+    </p>
+
+    {
+      products.length > 0 ? (
+        <ul class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => (
+            <ProductCard product={product} />
+          ))}
+        </ul>
+      ) : (
+        !dbError && (
+          <p class="mt-6 rounded-xl border border-dashed border-border p-8 text-center text-ink-muted">
+            Try adjusting your search or{" "}
+            <a href="/catalog" class="text-accent hover:underline">
+              reset filters
+            </a>
+            .
+          </p>
+        )
+      )
+    }
+  </div>
+</BaseLayout>

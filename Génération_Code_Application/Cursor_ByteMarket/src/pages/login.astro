@@ -1,0 +1,45 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AuthCard from "@/components/auth/AuthCard.astro";
+import FormField from "@/components/auth/FormField.astro";
+import { PASSWORD_MIN, USERNAME_MAX, USERNAME_MIN } from "@/lib/auth";
+
+const redirectTo = Astro.url.searchParams.get("redirect") ?? "/profile";
+const error = Astro.url.searchParams.get("error");
+---
+
+<BaseLayout title="Sign in — ByteMarket" description="Sign in to your ByteMarket account.">
+  <AuthCard title="Welcome back" subtitle="Sign in with your username and password." error={error}>
+    <form method="post" action="/api/auth/login" class="space-y-5">
+      <input type="hidden" name="redirect" value={redirectTo} />
+      <FormField
+        id="username"
+        name="username"
+        label="Username"
+        autocomplete="username"
+        required
+        minlength={USERNAME_MIN}
+        maxlength={USERNAME_MAX}
+      />
+      <FormField
+        id="password"
+        name="password"
+        label="Password"
+        type="password"
+        autocomplete="current-password"
+        required
+        minlength={PASSWORD_MIN}
+      />
+      <button
+        type="submit"
+        class="w-full rounded-lg bg-accent py-2.5 text-sm font-semibold text-surface transition hover:bg-accent-dim"
+      >
+        Sign in
+      </button>
+    </form>
+    <p class="mt-6 text-center text-sm text-ink-muted">
+      No account yet?
+      <a href="/register" class="font-medium text-accent hover:underline">Create one</a>
+    </p>
+  </AuthCard>
+</BaseLayout>

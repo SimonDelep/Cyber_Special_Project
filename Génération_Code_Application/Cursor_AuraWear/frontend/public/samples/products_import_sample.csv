@@ -1,0 +1,5 @@
+name,description,price,stock,category,image_url,is_active
+Silk Blouse,Lightweight silk blouse for evening wear,74.99,20,women,https://images.unsplash.com/photo-1564257631407-4deb1f4d9875?w=800&q=80,true
+Canvas Sneakers,Everyday low-top sneakers with cushioned insole,59.00,35,men,,true
+Wool Scarf,Soft merino wool scarf for cold seasons,42.50,50,accessories,,true
+Linen Shorts,Relaxed summer shorts with drawstring waist,48.00,28,women,https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=800&q=80,true

@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: gamergrid-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gamergrid
+      POSTGRES_PASSWORD: gamergrid
+      POSTGRES_DB: gamergrid
+    ports:
+      - "5433:5432"
+    volumes:
+      - gamergrid_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamergrid -d gamergrid"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  gamergrid_pgdata:

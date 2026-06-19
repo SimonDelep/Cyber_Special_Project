@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none">
+  <path d="M85 90 L85 120 L115 120 L115 90" fill="#334155"/>
+  <ellipse cx="100" cy="55" rx="35" ry="40" fill="url(#bulb)"/>
+  <defs>
+    <radialGradient id="bulb" cx="50%" cy="40%">
+      <stop stop-color="#fef08a"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </radialGradient>
+  </defs>
+</svg>

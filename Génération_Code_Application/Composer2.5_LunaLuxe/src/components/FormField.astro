@@ -1,0 +1,51 @@
+---
+interface Props {
+  label: string;
+  name: string;
+  type?: string;
+  value?: string;
+  required?: boolean;
+  placeholder?: string;
+  hint?: string;
+  rows?: number;
+}
+
+const {
+  label,
+  name,
+  type = 'text',
+  value = '',
+  required = false,
+  placeholder,
+  hint,
+  rows,
+} = Astro.props;
+
+const inputClass =
+  'mt-1 w-full rounded-xl border border-luna-200 bg-luna-50 px-4 py-2.5 text-sm text-luna-900 outline-none transition-colors focus:border-lavender-400 focus:ring-2 focus:ring-lavender-400/20';
+---
+
+<div>
+  <label for={name} class="block text-sm font-medium text-luna-700">{label}</label>
+  {rows ? (
+    <textarea
+      id={name}
+      name={name}
+      rows={rows}
+      required={required}
+      placeholder={placeholder}
+      class={inputClass}>{value}</textarea
+    >
+  ) : (
+    <input
+      type={type}
+      id={name}
+      name={name}
+      value={value}
+      required={required}
+      placeholder={placeholder}
+      class={inputClass}
+    />
+  )}
+  {hint && <p class="mt-1 text-xs text-luna-500">{hint}</p>}
+</div>

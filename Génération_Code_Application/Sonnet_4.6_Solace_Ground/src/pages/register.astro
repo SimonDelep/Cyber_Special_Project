@@ -1,0 +1,23 @@
+---
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import AuthForm from '@/components/solid/AuthForm';
+
+const user = Astro.locals.user;
+if (user) {
+  return Astro.redirect('/profile');
+}
+---
+
+<AuthLayout title="Register — Solace Ground">
+  <h1 class="font-serif text-3xl text-cork-900">Create your account</h1>
+  <p class="mt-2 text-sm text-cork-600">Join Solace Ground to manage your profile and orders.</p>
+  <div class="mt-8">
+    <AuthForm client:load mode="register" />
+  </div>
+  <p class="mt-6 text-center text-sm text-cork-600">
+    Already registered?
+    <a href="/login" class="font-medium text-cork-800 underline-offset-2 hover:underline">
+      Sign in
+    </a>
+  </p>
+</AuthLayout>

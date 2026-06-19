@@ -1,0 +1,59 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import Alert from '@/components/Alert.astro';
+import AdminTabs from '@/components/admin/AdminTabs.astro';
+import AdminUsersSection from '@/components/admin/AdminUsersSection.astro';
+import AdminProductsSection from '@/components/admin/AdminProductsSection.astro';
+import { getAllUsersWithBalance } from '@/lib/admin/users';
+import { getAllProducts } from '@/lib/products';
+
+const currentUser = Astro.locals.user;
+if (!currentUser) {
+  return Astro.redirect(`/login?redirect=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+const tabParam = Astro.url.searchParams.get('tab');
+const activeTab = tabParam === 'products' ? 'products' : 'users';
+
+const error = Astro.url.searchParams.get('error');
+const success = Astro.url.searchParams.get('success');
+
+const [users, products] = await Promise.all([
+  getAllUsersWithBalance(),
+  getAllProducts(),
+]);
+---
+
+<BaseLayout title="Admin Panel — LunaLuxe">
+  <Header />
+
+  <main class="mx-auto max-w-5xl px-6 pb-24 pt-28">
+    <div class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lavender-500">Administration</p>
+      <h1 class="mt-2 font-serif text-4xl font-semibold text-luna-900">Admin panel</h1>
+      <p class="mt-2 text-sm text-luna-600">
+        Manage users, balances, and products. Signed in as <strong>{currentUser.username}</strong>.
+        <a href="/admin/logs" class="ml-2 font-medium text-lavender-600 hover:text-lavender-500">
+          View system logs →
+        </a>
+      </p>
+    </div>
+
+    <Alert type="error" message={error} />
+    <Alert type="success" message={success} />
+
+    <AdminTabs activeTab={activeTab} />
+
+    {activeTab === 'users' ? (
+      <AdminUsersSection users={users} currentAdminId={currentUser.id} />
+    ) : (
+      <AdminProductsSection products={products} />
+    )}
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+import type { Product } from '@/db/schema';
+import ProductCard from '@/components/ProductCard.astro';
+
+interface Props {
+  products: Product[];
+}
+
+const { products } = Astro.props;
+---
+
+<section id="products" class="bg-luna-50 py-24">
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="mb-12 text-center">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lavender-500">Featured</p>
+      <h2 class="mt-3 font-serif text-4xl font-semibold text-luna-900 md:text-5xl">
+        Sleep Essentials
+      </h2>
+      <p class="mx-auto mt-4 max-w-xl text-luna-600">
+        Three signature pieces — each chosen for texture, breathability, and the kind of rest you deserve.
+      </p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-3">
+      {products.map((product) => (
+        <ProductCard product={product} />
+      ))}
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href="/catalog"
+        class="inline-block rounded-full border border-luna-300 px-8 py-3 text-sm font-semibold text-luna-800 transition-colors hover:border-luna-400 hover:bg-luna-100"
+      >
+        View full catalog
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import WeatherChicoutimi from '../components/WeatherChicoutimi.astro';
+import { getAllProducts } from '../lib/db';
+import { fetchChicoutimiWeather } from '../lib/weather/chicoutimi';
+
+const catalogProducts = getAllProducts();
+const chicoutimiWeather = await fetchChicoutimiWeather();
+---
+
+<BaseLayout>
+  <!-- Hero -->
+  <section class="relative overflow-hidden border-b border-white/10">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(34,211,238,0.18),transparent)]"
+      aria-hidden="true"
+    />
+    <div class="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:py-32">
+      <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
+        <div class="max-w-3xl">
+          <p class="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+            <span class="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+            Smart home, simplified
+          </p>
+          <h1 class="font-display text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Your home, <span class="bg-gradient-to-r from-accent to-glow bg-clip-text text-transparent">connected</span> and beautifully lit
+          </h1>
+          <p class="mt-6 max-w-xl text-lg text-nest-100/70">
+            NovaNest brings sleek doorbell cameras and ambient LED lighting together — all controlled from one intuitive app.
+          </p>
+          <div class="mt-10 flex flex-wrap gap-4">
+            <a
+              href="/catalog"
+              class="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-nest-950 transition hover:bg-accent/90"
+            >
+              Browse catalog
+            </a>
+            <a
+              href="#features"
+              class="rounded-full border border-white/20 px-6 py-3 text-sm font-medium text-white transition hover:border-accent/50 hover:text-accent"
+            >
+              See how it works
+            </a>
+          </div>
+        </div>
+
+        <WeatherChicoutimi weather={chicoutimiWeather} />
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section id="categories" class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <h2 class="font-display text-2xl font-semibold text-white sm:text-3xl">Shop by category</h2>
+    <p class="mt-2 text-nest-100/60">Two essentials for a smarter, safer, more atmospheric home.</p>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2">
+      <a
+        href="/catalog?category=doorbell-cameras"
+        class="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-nest-900 to-nest-800 p-8 transition hover:border-accent/40"
+      >
+        <div class="absolute right-0 top-0 h-32 w-32 rounded-full bg-accent/10 blur-3xl transition group-hover:bg-accent/20" />
+        <span class="text-3xl" aria-hidden="true">📹</span>
+        <h3 class="mt-4 font-display text-xl font-semibold text-white">Doorbell cameras</h3>
+        <p class="mt-2 text-sm text-nest-100/60">
+          HD video, two-way talk, and motion alerts — see who is at the door from anywhere.
+        </p>
+        <span class="mt-4 inline-block text-sm font-medium text-accent group-hover:underline">Browse cameras →</span>
+      </a>
+      <a
+        href="/catalog?category=smart-lighting"
+        class="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-nest-900 to-nest-800 p-8 transition hover:border-glow/40"
+      >
+        <div class="absolute right-0 top-0 h-32 w-32 rounded-full bg-glow/10 blur-3xl transition group-hover:bg-glow/20" />
+        <span class="text-3xl" aria-hidden="true">💡</span>
+        <h3 class="mt-4 font-display text-xl font-semibold text-white">Ambient smart lighting</h3>
+        <p class="mt-2 text-sm text-nest-100/60">
+          Strips, panels, and bulbs with millions of colors and scenes synced to your mood.
+        </p>
+        <span class="mt-4 inline-block text-sm font-medium text-glow group-hover:underline">Browse lighting →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Product catalog -->
+  <section id="products" class="border-t border-white/10 bg-nest-900/30">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 class="font-display text-2xl font-semibold text-white sm:text-3xl">Our products</h2>
+          <p class="mt-2 text-nest-100/60">
+            {catalogProducts.length > 0
+              ? `${catalogProducts.length} smart home devices ready to ship — doorbells, strips, panels, and bulbs.`
+              : 'Browse doorbell cameras and ambient lighting for every room.'}
+          </p>
+        </div>
+        <a
+          href="/catalog"
+          class="text-sm font-medium text-accent hover:underline sm:shrink-0"
+        >
+          Full catalog →
+        </a>
+      </div>
+
+      {catalogProducts.length > 0 ? (
+        <ul class="mt-10 grid list-none gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {catalogProducts.map((product) => (
+            <li>
+              <ProductCard product={product} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-10 rounded-xl border border-dashed border-white/20 p-8 text-center text-nest-100/60">
+          No products yet. Run <code class="rounded bg-nest-800 px-1.5 py-0.5 text-accent">npm run db:setup</code> to seed the database.
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <h2 class="font-display text-2xl font-semibold text-white sm:text-3xl">Why NovaNest</h2>
+    <div class="mt-10 grid gap-8 sm:grid-cols-3">
+      <div>
+        <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/15 text-accent">◎</div>
+        <h3 class="font-medium text-white">One app, everything</h3>
+        <p class="mt-2 text-sm text-nest-100/60">
+          Control cameras and lights from a single NovaNest app — no juggling five different ecosystems.
+        </p>
+      </div>
+      <div>
+        <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-glow/15 text-glow">⚡</div>
+        <h3 class="font-medium text-white">Install in minutes</h3>
+        <p class="mt-2 text-sm text-nest-100/60">
+          Wireless options and clear setup guides mean you are up and running before your coffee cools.
+        </p>
+      </div>
+      <div>
+        <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/15 text-accent">🔒</div>
+        <h3 class="font-medium text-white">Privacy first</h3>
+        <p class="mt-2 text-sm text-nest-100/60">
+          End-to-end encryption on camera streams and local processing options for motion detection.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

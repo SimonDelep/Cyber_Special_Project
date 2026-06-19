@@ -1,0 +1,54 @@
+---
+import WeatherChicoutimi from "@/components/landing/WeatherChicoutimi.astro";
+import type { ChicoutimiWeather } from "@/lib/weather/chicoutimi";
+
+interface Props {
+  weather: ChicoutimiWeather | null;
+}
+
+const { weather } = Astro.props;
+---
+
+<section class="relative overflow-hidden border-b border-border">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(34,211,238,0.18),transparent)]"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute inset-0 opacity-30"
+    style="background-image: linear-gradient(rgba(30,41,59,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(30,41,59,0.4) 1px, transparent 1px); background-size: 48px 48px;"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 sm:py-28 lg:grid-cols-[1fr_min(100%,20rem)] lg:items-start lg:gap-12">
+    <div>
+      <p class="font-mono text-sm uppercase tracking-widest text-accent">
+        Electronics &amp; components
+      </p>
+      <h1 class="mt-4 max-w-2xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+        Build smarter with <span class="text-accent">ByteMarket</span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg text-ink-muted">
+        CPUs, GPUs, storage, peripherals, and networking — curated for makers,
+        gamers, and IT pros. Fast shipping, honest specs, local inventory.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <a
+          href="/catalog"
+          class="inline-flex rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-surface transition hover:bg-accent-dim"
+        >
+          Browse catalog
+        </a>
+        <a
+          href="#categories"
+          class="inline-flex rounded-lg border border-border px-6 py-3 text-sm font-medium text-ink transition hover:border-ink-muted/50"
+        >
+          Explore categories
+        </a>
+      </div>
+    </div>
+    <WeatherChicoutimi weather={weather} />
+  </div>
+</section>

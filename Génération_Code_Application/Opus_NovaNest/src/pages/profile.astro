@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileForm from '../components/solid/ProfileForm';
+import OrderHistory from '../components/solid/OrderHistory';
+
+const user = Astro.locals.user!;
+const forbidden = Astro.url.searchParams.get('error') === 'forbidden';
+---
+
+<BaseLayout title="My profile — NovaNest" description="View and edit your NovaNest account.">
+  <section class="mx-auto max-w-2xl space-y-10 px-4 py-12 sm:px-6">
+    <ProfileForm client:load initialUser={user} forbidden={forbidden} />
+    <OrderHistory client:load />
+  </section>
+</BaseLayout>

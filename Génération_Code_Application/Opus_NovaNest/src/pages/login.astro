@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthForm from '../components/solid/AuthForm';
+
+const redirect = Astro.url.searchParams.get('redirect') ?? '/profile';
+---
+
+<BaseLayout title="Log in — NovaNest" description="Sign in to your NovaNest account.">
+  <section class="mx-auto max-w-md px-4 py-16 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-white">Welcome back</h1>
+    <p class="mt-2 text-nest-100/60">Log in to manage your profile and orders.</p>
+
+    <div class="mt-8">
+      <AuthForm client:load mode="login" redirectTo={redirect} />
+    </div>
+
+    <p class="mt-8 text-center text-sm text-nest-100/60">
+      No account?
+      <a href="/register" class="font-medium text-accent hover:underline">Create one</a>
+    </p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,35 @@
+env:
+  contexts:
+    - name: baseline
+      urls:
+        - "{{TARGET_URL}}"
+      includePaths:
+        - "{{TARGET_URL}}.*"
+  parameters:
+    failOnError: false
+    progressToStdout: true
+jobs:
+{{HOST_REPLACER_JOB}}
+  - type: passiveScan-config
+    parameters:
+      maxAlertsPerRule: 10
+  - type: spider
+    parameters:
+      context: baseline
+      url: "{{TARGET_URL}}"
+      maxDuration: 5
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk/
+      reportFile: baseline-report.html
+      reportTitle: ZAP Baseline Scan Report
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk/
+      reportFile: baseline-alerts-raw.json
+      reportTitle: ZAP Baseline Alerts

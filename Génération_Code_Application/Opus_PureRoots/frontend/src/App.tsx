@@ -1,0 +1,52 @@
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import AdminRoute from "./components/AdminRoute";
+import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import AdminPage from "./pages/AdminPage";
+import CartPage from "./pages/CartPage";
+import CatalogPage from "./pages/CatalogPage";
+import HomePage from "./pages/HomePage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
+import RegisterPage from "./pages/RegisterPage";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="catalog" element={<CatalogPage />} />
+              <Route path="products/:slug" element={<ProductDetailPage />} />
+              <Route path="cart" element={<CartPage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage />} />
+              <Route
+                path="profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="admin"
+                element={
+                  <AdminRoute>
+                    <AdminPage />
+                  </AdminRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}

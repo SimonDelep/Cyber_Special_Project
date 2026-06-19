@@ -1,0 +1,41 @@
+export {
+  SESSION_COOKIE,
+  SESSION_MAX_AGE_DAYS,
+  USERNAME_MIN,
+  USERNAME_MAX,
+  PASSWORD_MIN,
+  USERNAME_PATTERN,
+} from "@/lib/auth/constants";
+export { hashPassword, verifyPassword } from "@/lib/auth/password";
+export {
+  createSession,
+  destroySession,
+  destroyAllUserSessions,
+  getCurrentUser,
+  getSessionUser,
+  resolveAuthUser,
+  purgeExpiredSessions,
+} from "@/lib/auth/session";
+export {
+  adminAdjustUserBalance,
+  adminCreateUser,
+  adminDeleteUser,
+  adminSetUserBalance,
+  adminUpdateUser,
+  adminUpdateUserRole,
+  authenticateUser,
+  clearUserAvatar,
+  deleteUserAccount,
+  findUserById,
+  findUserByUsername,
+  isAdmin,
+  listUsers,
+  registerUser,
+  requireAdmin,
+  requireAuth,
+  updateUserProfile,
+  updateUserAvatar,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "@/lib/auth/users";

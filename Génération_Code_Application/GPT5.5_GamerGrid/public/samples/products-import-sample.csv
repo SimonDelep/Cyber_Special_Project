@@ -1,0 +1,4 @@
+category_id,name,slug,description,price,image,badge,featured
+cat-air,Travel Pure Mini,travel-pure-mini,"Compact HEPA-13 purifier for hotel rooms and carry-on travel. Under 20 dB on night mode.",99.99,/images/whisperpure-mini.svg,Limited,true
+cat-humid,Desk Mist Lite,desk-mist-lite,"Single-room ultrasonic humidifier with auto shut-off and dim status LED.",49.99,/images/mistdesk-one.svg,,false
+cat-bottle,Hydro Track S,hydro-track-s,"Smart bottle with hydration reminders and 60-second UV-C cap cycle.",64.99,/images/uv-hydro-flask.svg,New,true

@@ -1,0 +1,67 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import ProductForm from "@/components/admin/ProductForm.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import { getProductById, listCategoriesForSelect } from "@/lib/admin/products";
+
+export const prerender = false;
+
+if (!getAdminActor(Astro.cookies)) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const productId = Number(Astro.params.id);
+if (!Number.isFinite(productId)) {
+  return Astro.redirect("/admin/products?error=Invalid+product+ID.");
+}
+
+const product = getProductById(productId);
+if (!product) {
+  return Astro.redirect("/admin/products?error=Product+not+found.");
+}
+
+const categories = listCategoriesForSelect();
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title={`${product.name} — Admin`} description="Edit product.">
+  <section class="mx-auto max-w-xl px-4 py-12 sm:px-6">
+    <header class="mb-8">
+      <a href="/admin/products" class="text-sm font-medium text-accent hover:underline">
+        ← All products
+      </a>
+      <h1 class="mt-4 text-3xl font-bold tracking-tight">{product.name}</h1>
+      <p class="mt-2 font-mono text-sm text-ink-muted">{product.slug}</p>
+    </header>
+
+    <AdminNav current="products" />
+    <AdminAlerts error={error} success={success} />
+
+    <ProductForm
+      product={product}
+      categories={categories}
+      action={`/api/admin/products/${product.id}`}
+      submitLabel="Save product"
+    />
+
+    <form
+      method="post"
+      action={`/api/admin/products/${product.id}`}
+      class="mt-8 rounded-2xl border border-red-500/30 bg-red-500/5 p-6"
+    >
+      <input type="hidden" name="action" value="delete" />
+      <h2 class="text-lg font-semibold text-red-200">Delete product</h2>
+      <p class="mt-2 text-sm text-ink-muted">This cannot be undone.</p>
+      <button
+        type="submit"
+        class="mt-4 rounded-lg border border-red-500/40 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/10"
+        onclick="return confirm('Delete this product permanently?')"
+      >
+        Delete product
+      </button>
+    </form>
+  </section>
+</BaseLayout>

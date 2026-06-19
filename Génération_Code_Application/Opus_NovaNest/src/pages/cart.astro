@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CartPage from '../components/solid/CartPage';
+
+const user = Astro.locals.user;
+const cartUser = user
+  ? {
+      id: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      balanceCents: user.balanceCents,
+    }
+  : null;
+---
+
+<BaseLayout title="Cart — NovaNest" description="Review your cart and checkout.">
+  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <CartPage client:load user={cartUser} />
+  </section>
+</BaseLayout>

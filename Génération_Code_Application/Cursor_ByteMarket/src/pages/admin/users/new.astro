@@ -1,0 +1,86 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import FormField from "@/components/auth/FormField.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import { PASSWORD_MIN, USERNAME_MAX, USERNAME_MIN } from "@/lib/auth";
+
+export const prerender = false;
+
+if (!getAdminActor(Astro.cookies)) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title="Create user — Admin" description="Create a new ByteMarket user.">
+  <section class="mx-auto max-w-xl px-4 py-12 sm:px-6">
+    <header class="mb-8">
+      <a href="/admin/users" class="text-sm font-medium text-accent hover:underline">
+        ← All users
+      </a>
+      <h1 class="mt-4 text-3xl font-bold tracking-tight">Create user</h1>
+    </header>
+
+    <AdminNav current="users" />
+    <AdminAlerts error={error} success={success} />
+
+    <form
+      method="post"
+      action="/api/admin/users"
+      class="space-y-5 rounded-2xl border border-border bg-surface-raised p-6"
+    >
+      <FormField
+        id="username"
+        name="username"
+        label="Username"
+        required
+        minlength={USERNAME_MIN}
+        maxlength={USERNAME_MAX}
+        autocomplete="username"
+      />
+      <FormField
+        id="password"
+        name="password"
+        label="Password"
+        type="password"
+        required
+        minlength={PASSWORD_MIN}
+        autocomplete="new-password"
+        hint={`At least ${PASSWORD_MIN} characters.`}
+      />
+      <FormField id="displayName" name="displayName" label="Display name" />
+      <FormField id="email" name="email" label="Email" type="email" autocomplete="email" />
+      <div>
+        <label for="role" class="mb-1.5 block text-sm font-medium text-ink">Role</label>
+        <select
+          id="role"
+          name="role"
+          class="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm"
+        >
+          <option value="user">user</option>
+          <option value="admin">admin</option>
+        </select>
+      </div>
+      <FormField
+        id="balance"
+        name="balance"
+        label="Initial balance (CAD)"
+        type="number"
+        step="0.01"
+        min="0"
+        value="0"
+        hint="Optional starting store credit."
+      />
+      <button
+        type="submit"
+        class="w-full rounded-lg bg-accent py-2.5 text-sm font-medium text-surface transition hover:bg-accent-dim"
+      >
+        Create user
+      </button>
+    </form>
+  </section>
+</BaseLayout>

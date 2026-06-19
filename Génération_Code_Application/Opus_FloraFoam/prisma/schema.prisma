@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductCategory {
+  SERUM
+  NIGHT_CREAM
+  EYE_PATCH
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SystemLogType {
+  LOGIN_ATTEMPT
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  LOGOUT
+  PROFILE_UPDATE
+  PASSWORD_CHANGE
+  ACCOUNT_DELETE
+  TRANSACTION_REQUEST
+  TRANSACTION_SUCCESS
+  TRANSACTION_FAILURE
+}
+
+enum SystemLogSeverity {
+  INFO
+  WARNING
+  ERROR
+}
+
+model User {
+  id              String   @id @default(cuid())
+  username        String   @unique
+  email           String?  @unique
+  name            String?
+  passwordHash    String
+  profileImageUrl String?
+  role            Role     @default(USER)
+  balanceCents    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  cart            Cart?
+  reviews         Review[]
+  orders          Order[]
+
+  @@index([role])
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  description String
+  category    ProductCategory
+  priceCents  Int
+  imageUrl    String?
+  featured    Boolean         @default(false)
+  inStock     Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  cartItems   CartItem[]
+  reviews     Review[]
+
+  @@index([category])
+  @@index([featured])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  title     String?
+  body      String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, userId])
+  @@index([productId])
+  @@index([userId])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+}
+
+model Order {
+  id                 String      @id @default(cuid())
+  invoiceNumber      String      @unique
+  userId             String
+  user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalCents         Int
+  balanceBeforeCents Int
+  balanceAfterCents  Int
+  customerUsername   String
+  customerName       String?
+  customerEmail      String?
+  items              OrderItem[]
+  createdAt          DateTime    @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id             String          @id @default(cuid())
+  orderId        String
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String?
+  productName    String
+  productSlug    String?
+  category       ProductCategory
+  unitPriceCents Int
+  quantity       Int
+  lineTotalCents Int
+
+  @@index([orderId])
+}
+
+model SystemLog {
+  id        String            @id @default(cuid())
+  type      SystemLogType
+  severity  SystemLogSeverity @default(INFO)
+  message   String
+  userId    String?
+  username  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime          @default(now())
+
+  @@index([type])
+  @@index([userId])
+  @@index([createdAt])
+}

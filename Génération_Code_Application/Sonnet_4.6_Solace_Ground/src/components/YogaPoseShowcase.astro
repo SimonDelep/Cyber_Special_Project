@@ -1,0 +1,64 @@
+---
+import { fetchFeaturedPoses } from '@/lib/yoga-api/client';
+import type { YogaPose } from '@/lib/yoga-api/types';
+
+let poses: YogaPose[] = [];
+let loadError = '';
+
+try {
+  poses = await fetchFeaturedPoses(6);
+} catch (e) {
+  loadError = e instanceof Error ? e.message : 'Unable to load poses.';
+}
+---
+
+<section id="yoga-poses" class="border-y border-cork-200 bg-white">
+  <div class="mx-auto max-w-6xl px-6 py-20">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-sage-600">
+          Powered by Yoga API
+        </p>
+        <h2 class="mt-2 font-serif text-3xl text-cork-900">Explore classic poses</h2>
+        <p class="mt-2 max-w-xl text-cork-600">
+          Pair your Solace Ground mat with foundational asanas — illustrated guides fetched live from an open yoga poses database.
+        </p>
+      </div>
+      <a
+        href="/yoga-poses"
+        class="inline-flex shrink-0 rounded-full border border-cork-400 px-6 py-2.5 text-sm font-medium text-cork-800 hover:bg-cork-50"
+      >
+        Browse all poses
+      </a>
+    </div>
+
+    {loadError ? (
+      <p class="mt-10 rounded-xl border border-dashed border-cork-300 bg-cork-50 px-6 py-8 text-center text-sm text-cork-600">
+        Pose library temporarily unavailable. Visit{' '}
+        <a href="/yoga-poses" class="font-medium text-cork-800 underline">Yoga poses</a>{' '}
+        to retry.
+      </p>
+    ) : poses.length === 0 ? (
+      <p class="mt-10 text-center text-sm text-cork-500">Loading poses unavailable — try the full explorer.</p>
+    ) : (
+      <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {poses.map((pose) => (
+          <li class="overflow-hidden rounded-2xl border border-cork-200 bg-cork-50/30">
+            <div class="flex aspect-[4/3] items-center justify-center bg-cork-50 p-4">
+              <img
+                src={pose.url_png}
+                alt=""
+                class="max-h-full max-w-full object-contain"
+                loading="lazy"
+              />
+            </div>
+            <div class="p-4">
+              <h3 class="font-serif text-lg text-cork-900">{pose.english_name}</h3>
+              <p class="text-sm text-cork-500">{pose.sanskrit_name_adapted}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>

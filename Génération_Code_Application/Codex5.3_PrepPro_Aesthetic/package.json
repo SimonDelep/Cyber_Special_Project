@@ -1,0 +1,43 @@
+{
+  "name": "preppro-aesthetic",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:seed-users": "tsx src/db/seed-users.ts",
+    "db:migrate-balance": "tsx src/db/migrate-balance.ts",
+    "db:migrate-reviews": "tsx src/db/migrate-reviews.ts",
+    "db:migrate-events": "tsx src/db/migrate-events.ts",
+    "db:migrate-orders": "tsx src/db/migrate-orders.ts",
+    "db:setup": "npm run db:push && npm run db:migrate-balance && npm run db:migrate-reviews && npm run db:migrate-events && npm run db:migrate-orders && npm run db:seed && npm run db:seed-users"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.2.0",
+    "@astrojs/solid-js": "^5.1.0",
+    "@nanostores/solid": "^0.5.0",
+    "@tailwindcss/vite": "^4.1.8",
+    "astro": "^5.7.10",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.11.1",
+    "drizzle-orm": "^0.43.1",
+    "nanostores": "^0.11.4",
+    "pdf-lib": "^1.17.1",
+    "solid-js": "^1.9.7",
+    "tailwindcss": "^4.1.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^7.6.13",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

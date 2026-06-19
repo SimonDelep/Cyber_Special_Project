@@ -1,0 +1,145 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import YogaPoseShowcase from '@/components/YogaPoseShowcase.astro';
+import { queryCatalog } from '@/lib/catalog/query';
+
+const user = Astro.locals.user;
+
+let catalog = queryCatalog({});
+const featured = catalog.slice(0, 3);
+
+const matCount = catalog.filter((p) => p.category === 'yoga-mat').length;
+const cushionCount = catalog.filter((p) => p.category === 'cushion').length;
+---
+
+<BaseLayout>
+  <Header user={user} />
+
+  <main>
+    <section class="relative overflow-hidden border-b border-cork-200">
+      <div
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--color-cork-200),transparent)]"
+        aria-hidden="true"
+      />
+      <div class="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <p class="text-xs font-medium uppercase tracking-[0.25em] text-sage-600">
+          Sustainably harvested natural cork
+        </p>
+        <h1 class="mt-4 max-w-3xl font-serif text-4xl leading-[1.1] text-cork-900 md:text-6xl">
+          Ground your practice in something that lasts.
+        </h1>
+        <p class="mt-6 max-w-xl text-lg text-cork-600">
+          Solace Ground crafts heavy-duty yoga mats and meditation cushions from premium cork —
+          grippy when wet, antimicrobial by nature, and gentle on the planet.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a
+            href="/catalog"
+            class="rounded-full bg-cork-800 px-8 py-3 text-sm font-medium text-cork-50 hover:bg-cork-700 transition-colors"
+          >
+            Browse catalog
+          </a>
+          <a
+            href="#craft"
+            class="rounded-full border border-cork-400 px-8 py-3 text-sm font-medium text-cork-800 hover:bg-cork-100 transition-colors"
+          >
+            Our craft
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="collection" class="mx-auto max-w-6xl px-6 py-20">
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 class="font-serif text-3xl text-cork-900">The collection</h2>
+          <p class="mt-2 max-w-lg text-cork-600">
+            {catalog.length > 0
+              ? `${catalog.length} cork essentials for mat work and meditation — mats, cushions, and bolsters built to endure.`
+              : 'Mats and cushions shaped for daily ritual.'}
+          </p>
+        </div>
+        {
+          catalog.length > 0 && (
+            <div class="flex flex-wrap gap-2 text-sm">
+              <span class="rounded-full border border-cork-300 bg-cork-50 px-3 py-1 text-cork-700">
+                {matCount} yoga {matCount === 1 ? 'mat' : 'mats'}
+              </span>
+              <span class="rounded-full border border-cork-300 bg-cork-50 px-3 py-1 text-cork-700">
+                {cushionCount} meditation {cushionCount === 1 ? 'cushion' : 'cushions'}
+              </span>
+            </div>
+          )
+        }
+      </div>
+
+      {catalog.length === 0 ? (
+        <p class="mt-12 rounded-2xl border border-dashed border-cork-300 bg-cork-100/50 px-6 py-12 text-center text-cork-600">
+          No products yet. Run <code class="rounded bg-cork-200 px-1.5 py-0.5 text-sm">npm run db:seed</code> to load the catalog.
+        </p>
+      ) : (
+        <>
+          <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((product) => (
+              <li>
+                <ProductCard
+                  product={product}
+                  reviewCount={product.reviewCount}
+                  averageRating={product.averageRating}
+                />
+              </li>
+            ))}
+          </ul>
+          <p class="mt-10 text-center">
+            <a
+              href="/catalog"
+              class="inline-flex rounded-full border border-cork-400 px-8 py-3 text-sm font-medium text-cork-800 hover:bg-cork-100"
+            >
+              View full catalog — search &amp; filter all {catalog.length} products
+            </a>
+          </p>
+        </>
+      )}
+    </section>
+
+    <YogaPoseShowcase />
+
+    <section id="craft" class="border-y border-cork-200 bg-cork-100/40">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <div class="grid gap-12 md:grid-cols-2 md:items-center">
+          <div>
+            <h2 class="font-serif text-3xl text-cork-900">Crafted for grip and longevity</h2>
+            <p class="mt-4 text-cork-600 leading-relaxed">
+              Cork opens its pores when warm and moist — the exact conditions of a strong practice.
+              Our mats use a dense cork top layer bonded to natural rubber, so you stay stable
+              without PVC or synthetic foams.
+            </p>
+          </div>
+          <ul class="grid gap-4 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
+            {['Extra-dense cork surface', 'Natural rubber base', 'Antimicrobial & biodegradable'].map(
+              (item) => (
+                <li class="rounded-xl border border-cork-200 bg-cork-50 px-4 py-3 text-sm font-medium text-cork-800">
+                  {item}
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="sustainability" class="mx-auto max-w-6xl px-6 py-20">
+      <h2 class="font-serif text-3xl text-cork-900">Harvested with care</h2>
+      <p class="mt-4 max-w-2xl text-cork-600 leading-relaxed">
+        Cork is stripped from living oak trees without harm; the bark regenerates for decades of
+        harvests. We source from certified forests and ship in plastic-free packaging — because
+        calm practice should extend beyond the mat.
+      </p>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

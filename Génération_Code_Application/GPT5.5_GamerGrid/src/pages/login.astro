@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AuthForm from '@/components/solid/AuthForm';
+import { requireGuestPage } from '@/lib/auth/guards';
+
+const guestRedirect = requireGuestPage(Astro);
+if (guestRedirect) return guestRedirect;
+
+const redirectTo = Astro.url.searchParams.get('redirect') ?? '/profile';
+---
+
+<BaseLayout title="Sign in — VoltStream" description="Sign in to your VoltStream account.">
+  <section class="mx-auto max-w-md px-4 py-16 sm:px-6 sm:py-24">
+    <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-8 shadow-xl">
+      <h1 class="text-2xl font-bold text-white">Welcome back</h1>
+      <p class="mt-2 text-sm text-slate-400">Sign in with your username and password.</p>
+      <div class="mt-8">
+        <AuthForm mode="login" redirectTo={redirectTo} client:load />
+      </div>
+      <p class="mt-6 text-center text-sm text-slate-400">
+        No account?
+        <a href="/register" class="font-medium text-volt-400 hover:text-volt-300">Create one</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

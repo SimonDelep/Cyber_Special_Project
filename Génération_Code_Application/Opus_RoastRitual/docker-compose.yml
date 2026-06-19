@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: roastritual-db
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: roastritual
+      POSTGRES_PASSWORD: roastritual
+      POSTGRES_DB: roastritual
+    volumes:
+      - roastritual_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U roastritual -d roastritual"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  roastritual_pgdata:

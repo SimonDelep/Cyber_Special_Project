@@ -1,0 +1,32 @@
+---
+interface Props {
+  activeTab: 'users' | 'products' | 'logs';
+}
+
+const { activeTab } = Astro.props;
+const tabClass = (tab: string) =>
+  tab === activeTab
+    ? 'border-lavender-500 text-luna-900'
+    : 'border-transparent text-luna-500 hover:border-luna-300 hover:text-luna-700';
+---
+
+<nav class="mb-8 flex flex-wrap gap-6 border-b border-luna-200">
+  <a
+    href="/admin?tab=users"
+    class:list={['border-b-2 pb-3 text-sm font-semibold transition-colors', tabClass('users')]}
+  >
+    Users
+  </a>
+  <a
+    href="/admin?tab=products"
+    class:list={['border-b-2 pb-3 text-sm font-semibold transition-colors', tabClass('products')]}
+  >
+    Products
+  </a>
+  <a
+    href="/admin/logs"
+    class:list={['border-b-2 pb-3 text-sm font-semibold transition-colors', tabClass('logs')]}
+  >
+    System logs
+  </a>
+</nav>

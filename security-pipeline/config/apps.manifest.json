@@ -1,0 +1,306 @@
+{
+  "appsRoot": "auto-discovered (*Code_Application folder)",
+  "apps": [
+    {
+      "name": "Codex5.3_HydroFlasked",
+      "stack": "nextjs",
+      "sonarKey": "codex53-hydroflasked",
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:3000",
+      "ports": { "app": 3000, "postgres": 5433 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "admin1234" },
+        "customer": { "username": "demo", "password": "demo1234" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Codex5.3_PrepPro_Aesthetic",
+      "stack": "astro",
+      "sonarKey": "codex53-preppro-aesthetic",
+      "url": "http://localhost:4321",
+      "apiUrl": "http://localhost:4321",
+      "ports": { "app": 4321 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "Admin123!" },
+        "customer": { "username": "demo", "password": "Demo1234!" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Codex5.3_VistaCanvas",
+      "stack": "fastapi",
+      "sonarKey": "codex53-vistacanvas",
+      "url": "http://localhost:5173",
+      "apiUrl": "http://localhost:8000",
+      "ports": { "app": 5173, "api": 8000, "postgres": 5432 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "admin12345" },
+        "customer": { "username": "user", "password": "user12345" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Composer2.5_AuraAsh",
+      "stack": "nextjs",
+      "sonarKey": "composer25-auraash",
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:3000",
+      "ports": { "app": 3000, "postgres": 15432 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "admin123" },
+        "customer": { "username": "demo", "password": "Demo1234!" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": false, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Composer2.5_LunaLuxe",
+      "stack": "astro",
+      "sonarKey": "composer25-lunaluxe",
+      "url": "http://localhost:4321",
+      "apiUrl": "http://localhost:4321",
+      "ports": { "app": 4321 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "Admin123!" },
+        "customer": { "username": "demo", "password": "Demo1234!" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Composer2.5_SproutSoil",
+      "stack": "fastapi",
+      "sonarKey": "composer25-sproutsoil",
+      "url": "http://localhost:5173",
+      "apiUrl": "http://localhost:8000",
+      "ports": { "app": 5173, "api": 8000, "postgres": 5434 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "admin12345" },
+        "customer": { "username": "stefoula", "password": "11111111" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Cursor_AuraWear",
+      "stack": "fastapi",
+      "sonarKey": "cursor-aurawear",
+      "url": "http://localhost:5173",
+      "apiUrl": "http://localhost:8000",
+      "ports": { "app": 5173, "api": 8000, "postgres": 5432 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "changeme" },
+        "customer": { "username": "user", "password": "changeme" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Cursor_ByteMarket",
+      "stack": "astro",
+      "sonarKey": "cursor-bytemarket",
+      "url": "http://localhost:4321",
+      "apiUrl": "http://localhost:4321",
+      "ports": { "app": 4321 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "form",
+        "admin": { "username": "admin", "password": "admin12345" },
+        "customer": { "username": "demo", "password": "demo12345" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Cursor_E-Shop",
+      "stack": "nextjs",
+      "sonarKey": "cursor-e-shop",
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:3000",
+      "ports": { "app": 3000, "postgres": 5432 },
+      "auth": {
+        "loginPath": "/api/auth/callback/credentials",
+        "loginMethod": "nextauth",
+        "admin": { "email": "admin@eshop.dev", "password": "Admin123!" },
+        "customer": { "email": "customer@eshop.dev", "password": "Customer123!" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Cursor_Lignum_Design",
+      "stack": "nextjs",
+      "sonarKey": "cursor-lignum-design",
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:3000",
+      "ports": { "app": 3000, "postgres": 5432 },
+      "auth": {
+        "loginPath": "/api/auth/callback/credentials",
+        "loginMethod": "nextauth",
+        "admin": { "username": "admin", "email": "admin@admin.com", "identifier": "admin@admin.com", "password": "Admin123!" },
+        "customer": { "username": "stefoula", "email": "stefoula@free.fr", "identifier": "stefoula@free.fr", "password": "11111111" }
+      },
+      "features": { "auth": true, "checkout": false, "invoice": true, "csvImport": false, "ssrf": false, "auditLog": false, "reviews": false }
+    },
+    {
+      "name": "GPT5.5_AeroPure",
+      "stack": "nextjs",
+      "sonarKey": "gpt55-aeropure",
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:3000",
+      "ports": { "app": 3000, "postgres": 5432 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "admin12345" },
+        "customer": { "username": "demo", "password": "demo12345" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "GPT5.5_GamerGrid",
+      "stack": "astro",
+      "sonarKey": "gpt55-gamergrid",
+      "url": "http://localhost:4321",
+      "apiUrl": "http://localhost:4321",
+      "ports": { "app": 4321 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "Admin123!" },
+        "customer": { "username": "stefoula", "password": "11111111" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "GPT5.5_VoltStream",
+      "stack": "fastapi",
+      "sonarKey": "gpt55-voltstream",
+      "url": "http://localhost:5173",
+      "apiUrl": "http://localhost:8001",
+      "ports": { "app": 5173, "api": 8001, "postgres": 5433 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "bearer",
+        "admin": { "email": "admin@gamergrid.com", "password": "GamerGridAdmin123!" },
+        "customer": { "email": "stefoula@free.fr", "password": "11111111" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Opus_FloraFoam",
+      "stack": "nextjs",
+      "sonarKey": "opus-florafoam",
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:3000",
+      "ports": { "app": 3000, "postgres": 5433 },
+      "auth": {
+        "loginPath": "/api/auth/callback/credentials",
+        "loginMethod": "nextauth",
+        "admin": { "username": "admin", "password": "admin123" },
+        "customer": { "username": "stefoula", "password": "11111111" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Opus_NovaNest",
+      "stack": "astro",
+      "sonarKey": "opus-novanest",
+      "url": "http://localhost:4321",
+      "apiUrl": "http://localhost:4321",
+      "ports": { "app": 4321 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "Admin123!" },
+        "customer": { "username": "demo", "password": "Demo1234!" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Opus_PureRoots",
+      "stack": "fastapi",
+      "sonarKey": "opus-pureroots",
+      "url": "http://localhost:5173",
+      "apiUrl": "http://localhost:8000",
+      "apiPrefix": "/api/v1",
+      "ports": { "app": 5173, "api": 8000, "postgres": 5432 },
+      "auth": {
+        "loginPath": "/api/v1/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "admin123" },
+        "customer": { "username": "stefoula", "password": "11111111" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Opus_RoastRitual",
+      "stack": "nextjs",
+      "sonarKey": "opus-roastritual",
+      "url": "http://localhost:3005",
+      "apiUrl": "http://localhost:3005",
+      "ports": { "app": 3005, "postgres": 5434 },
+      "auth": {
+        "loginPath": "/api/auth/callback/credentials",
+        "loginMethod": "nextauth",
+        "admin": { "username": "admin", "password": "admin123" },
+        "customer": { "username": "demo", "password": "demo1234" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Sonnet_4.6_EverThreadCo",
+      "stack": "nextjs",
+      "sonarKey": "sonnet46-everthreadco",
+      "url": "http://localhost:3000",
+      "apiUrl": "http://localhost:3000",
+      "ports": { "app": 3000, "postgres": 5432 },
+      "auth": {
+        "loginPath": "/api/auth/callback/credentials",
+        "loginMethod": "nextauth",
+        "admin": { "username": "admin", "password": "Admin123!" },
+        "customer": { "username": "demo", "password": "Demo1234!" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Sonnet_4.6_Solace_Ground",
+      "stack": "astro",
+      "sonarKey": "sonnet46-solace-ground",
+      "url": "http://localhost:4321",
+      "apiUrl": "http://localhost:4321",
+      "ports": { "app": 4321 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "Admin123!" },
+        "customer": { "username": "demo", "password": "Demo1234!" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    },
+    {
+      "name": "Sonnet_4.6_ZestZing",
+      "stack": "fastapi",
+      "sonarKey": "sonnet46-zestzing",
+      "url": "http://localhost:5173",
+      "apiUrl": "http://localhost:8000",
+      "ports": { "app": 5173, "api": 8000, "postgres": 5434 },
+      "auth": {
+        "loginPath": "/api/auth/login",
+        "loginMethod": "json",
+        "admin": { "username": "admin", "password": "admin123" },
+        "customer": { "username": "stefoula", "password": "11111111" }
+      },
+      "features": { "auth": true, "checkout": true, "invoice": true, "csvImport": true, "ssrf": true, "auditLog": true, "reviews": true }
+    }
+  ]
+}

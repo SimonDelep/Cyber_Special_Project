@@ -1,0 +1,51 @@
+---
+import type { Product } from '@/db/schema';
+import type { ProductRatingSummary } from '@/lib/reviews';
+import AddToCartButton from '@/components/solid/AddToCartButton';
+import { formatCurrency } from '@/lib/format';
+import { formatRating, renderStars } from '@/lib/rating';
+
+interface Props {
+  product: Product;
+  rating?: ProductRatingSummary;
+}
+
+const { product, rating } = Astro.props;
+---
+
+<article class="group flex flex-col overflow-hidden rounded-2xl border border-luna-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+  <a href={`/products/${product.slug}`} class="aspect-[4/3] overflow-hidden bg-luna-100">
+    <img
+      src={product.imageUrl}
+      alt={product.name}
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      loading="lazy"
+    />
+  </a>
+  <div class="flex flex-1 flex-col p-6">
+    <p class="text-xs font-medium uppercase tracking-wider text-luna-500">{product.category}</p>
+    <a href={`/products/${product.slug}`}>
+      <h3 class="mt-2 font-serif text-xl font-semibold text-luna-900 transition-colors group-hover:text-lavender-600">
+        {product.name}
+      </h3>
+    </a>
+    {rating && rating.reviewCount > 0 && (
+      <p class="mt-2 text-xs text-luna-600">
+        <span class="text-lavender-500">{renderStars(rating.averageRating)}</span>
+        <span class="ml-1">{formatRating(rating.averageRating)} ({rating.reviewCount})</span>
+      </p>
+    )}
+    <p class="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-luna-600">{product.description}</p>
+    <div class="mt-5 flex items-center justify-between gap-3">
+      <span class="text-lg font-semibold text-luna-800">{formatCurrency(product.price)}</span>
+      <AddToCartButton
+        client:visible
+        productId={product.id}
+        slug={product.slug}
+        name={product.name}
+        price={product.price}
+        imageUrl={product.imageUrl}
+      />
+    </div>
+  </div>
+</article>

@@ -1,0 +1,44 @@
+---
+import AddToCartButton from './solid/AddToCartButton';
+import { formatPrice } from '../lib/format';
+import type { Product } from '../lib/db/schema';
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const categoryLabel =
+  product.category === 'doorbell-cameras' ? 'Doorbell camera' : 'Smart lighting';
+---
+
+<article class="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-nest-900/60 transition hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5">
+  <a href={`/products/${product.slug}`} class="block">
+    <div class="relative aspect-[4/3] bg-gradient-to-br from-nest-800 to-nest-900 p-8">
+      <img
+        src={product.image}
+        alt={product.name}
+        class="mx-auto h-full max-h-40 w-auto object-contain transition group-hover:scale-105"
+        loading="lazy"
+      />
+      <span class="absolute left-4 top-4 rounded-full bg-nest-950/80 px-2.5 py-1 text-xs text-accent backdrop-blur">
+        {categoryLabel}
+      </span>
+    </div>
+  </a>
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    <div>
+      <a href={`/products/${product.slug}`} class="hover:text-accent">
+        <h3 class="font-display text-lg font-semibold text-white">{product.name}</h3>
+      </a>
+      <p class="mt-1 line-clamp-2 text-sm text-nest-100/60">{product.description}</p>
+    </div>
+    <p class="font-display text-xl font-semibold text-accent">{formatPrice(product.priceCents)}</p>
+    <AddToCartButton
+      client:load
+      productId={product.id}
+      name={product.name}
+      priceCents={product.priceCents}
+    />
+  </div>
+</article>

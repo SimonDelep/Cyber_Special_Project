@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  --cream: #faf6f0;
+  --linen: #f0e8dc;
+  --espresso: #2c1810;
+  --espresso-light: #4a3228;
+  --sage: #8b9a7d;
+  --sage-dark: #5c6b52;
+  --background: var(--cream);
+  --foreground: var(--espresso);
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-linen: var(--linen);
+  --color-espresso: var(--espresso);
+  --color-espresso-light: var(--espresso-light);
+  --color-sage: var(--sage);
+  --color-sage-dark: var(--sage-dark);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-playfair);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}

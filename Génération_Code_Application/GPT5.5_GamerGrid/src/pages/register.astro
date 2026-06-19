@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AuthForm from '@/components/solid/AuthForm';
+import { requireGuestPage } from '@/lib/auth/guards';
+
+const guestRedirect = requireGuestPage(Astro);
+if (guestRedirect) return guestRedirect;
+---
+
+<BaseLayout title="Create account — VoltStream" description="Register for a VoltStream account.">
+  <section class="mx-auto max-w-md px-4 py-16 sm:px-6 sm:py-24">
+    <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-8 shadow-xl">
+      <h1 class="text-2xl font-bold text-white">Create your account</h1>
+      <p class="mt-2 text-sm text-slate-400">Join VoltStream to manage your profile and orders.</p>
+      <div class="mt-8">
+        <AuthForm mode="register" client:load />
+      </div>
+      <p class="mt-6 text-center text-sm text-slate-400">
+        Already registered?
+        <a href="/login" class="font-medium text-volt-400 hover:text-volt-300">Sign in</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

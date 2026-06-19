@@ -1,0 +1,4 @@
+results/
+config/.env
+config/apps-root.txt
+*.log

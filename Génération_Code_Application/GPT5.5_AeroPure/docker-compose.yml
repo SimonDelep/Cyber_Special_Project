@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aeropure-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aeropure
+      POSTGRES_PASSWORD: aeropure_dev
+      POSTGRES_DB: aeropure
+    volumes:
+      - aeropure_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aeropure -d aeropure"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  aeropure_pgdata:

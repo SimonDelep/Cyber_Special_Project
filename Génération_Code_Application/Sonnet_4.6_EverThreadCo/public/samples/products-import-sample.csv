@@ -1,0 +1,3 @@
+name,slug,description,price,category_slug,image_url,featured,in_stock
+Hemp Linen Blend Shirt,hemp-linen-blend-shirt,"Lightweight shirt in organic hemp and linen. Breathable for warm days.",64.00,essentials,,false,true
+Organic Wool Scarf,organic-wool-scarf,"Soft merino-blend scarf in undyed organic wool. One size.",42.50,essentials,https://example.com/images/wool-scarf.jpg,true,true

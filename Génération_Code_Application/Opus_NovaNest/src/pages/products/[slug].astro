@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AddToCartButton from '../../components/solid/AddToCartButton';
+import ProductReviews from '../../components/solid/ProductReviews';
+import { findProductBySlug } from '../../lib/db/products';
+import { getProductReviewSummary } from '../../lib/db/reviews';
+import { formatPrice } from '../../lib/format';
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/catalog');
+}
+
+const product = findProductBySlug(slug);
+
+if (!product) {
+  return Astro.redirect('/catalog');
+}
+
+const summary = getProductReviewSummary(product.id);
+const user = Astro.locals.user;
+
+const categoryLabel =
+  product.category === 'doorbell-cameras' ? 'Doorbell camera' : 'Smart lighting';
+---
+
+<BaseLayout title={`${product.name} — NovaNest`} description={product.description}>
+  <article class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <nav class="mb-8 text-sm text-nest-100/60">
+      <a href="/catalog" class="text-accent hover:underline">Catalog</a>
+      <span class="mx-2">/</span>
+      <span class="text-nest-100/80">{product.name}</span>
+    </nav>
+
+    <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-nest-900 to-nest-800 p-10">
+        <img
+          src={product.image}
+          alt={product.name}
+          class="mx-auto max-h-80 w-full object-contain"
+          width="400"
+          height="400"
+        />
+        <span class="absolute left-4 top-4 rounded-full bg-nest-950/80 px-3 py-1 text-xs text-accent backdrop-blur">
+          {categoryLabel}
+        </span>
+      </div>
+
+      <div class="flex flex-col gap-6">
+        <div>
+          <h1 class="font-display text-3xl font-bold text-white sm:text-4xl">{product.name}</h1>
+          {summary.count > 0 && (
+            <p class="mt-2 text-sm text-glow">
+              ★ {summary.averageRating} ({summary.count} review{summary.count === 1 ? '' : 's'})
+            </p>
+          )}
+          <p class="mt-4 font-display text-3xl font-semibold text-accent">
+            {formatPrice(product.priceCents)}
+          </p>
+        </div>
+        <p class="text-nest-100/70 leading-relaxed">{product.description}</p>
+        <AddToCartButton
+          client:load
+          productId={product.id}
+          name={product.name}
+          priceCents={product.priceCents}
+        />
+        <a href="#reviews" class="text-sm text-accent hover:underline">
+          Jump to reviews ↓
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-16 border-t border-white/10 pt-16">
+      <ProductReviews
+        client:load
+        productSlug={product.slug}
+        user={user ? { id: user.id, displayName: user.displayName } : null}
+      />
+    </div>
+  </article>
+</BaseLayout>

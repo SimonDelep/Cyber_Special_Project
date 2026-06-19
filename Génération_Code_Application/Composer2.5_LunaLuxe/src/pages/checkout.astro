@@ -1,0 +1,51 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import CheckoutPanel from '@/components/solid/CheckoutPanel';
+import { findUserById } from '@/lib/auth/users';
+
+const sessionUser = Astro.locals.user;
+if (!sessionUser) {
+  return Astro.redirect(`/login?redirect=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+const freshUser = await findUserById(sessionUser.id);
+const balance = freshUser?.balance ?? 0;
+
+const error = Astro.url.searchParams.get('error');
+const success = Astro.url.searchParams.get('success') === '1';
+const successTotal = Number(Astro.url.searchParams.get('total'));
+const successBalance = Number(Astro.url.searchParams.get('balance'));
+const orderId = Number(Astro.url.searchParams.get('orderId'));
+const orderNumber = Astro.url.searchParams.get('orderNumber');
+---
+
+<BaseLayout title="Checkout — LunaLuxe">
+  <Header />
+
+  <main class="mx-auto max-w-4xl px-6 pb-24 pt-28">
+    <div class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lavender-500">Checkout</p>
+      <h1 class="mt-2 font-serif text-4xl font-semibold text-luna-900">Complete your order</h1>
+      <p class="mt-2 text-sm text-luna-600">
+        Signed in as <strong>{sessionUser.displayName}</strong> · Balance charged from your account
+      </p>
+    </div>
+
+    <CheckoutPanel
+      client:load
+      balance={balance}
+      error={error}
+      success={success}
+      successTotal={Number.isFinite(successTotal) ? successTotal : undefined}
+      successBalance={Number.isFinite(successBalance) ? successBalance : undefined}
+      orderId={Number.isFinite(orderId) && orderId > 0 ? orderId : undefined}
+      orderNumber={orderNumber ?? undefined}
+    />
+  </main>
+
+  <Footer />
+</BaseLayout>

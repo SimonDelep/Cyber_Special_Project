@@ -1,0 +1,74 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import { countProducts } from "@/lib/admin/products";
+import { countSystemLogs } from "@/lib/audit";
+import { listUsers } from "@/lib/auth";
+
+export const prerender = false;
+
+const actor = getAdminActor(Astro.cookies);
+if (!actor) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const allUsers = listUsers();
+const productCount = countProducts();
+let logCount = 0;
+try {
+  logCount = countSystemLogs();
+} catch {
+  logCount = 0;
+}
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title="Admin — ByteMarket" description="ByteMarket administration.">
+  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="font-mono text-sm uppercase tracking-widest text-accent">Administration</p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight">Admin panel</h1>
+        <p class="mt-2 text-ink-muted">Signed in as @{actor.username}</p>
+      </div>
+      <a href="/profile" class="text-sm font-medium text-accent hover:underline">
+        ← Back to profile
+      </a>
+    </header>
+
+    <AdminNav current="dashboard" />
+    <AdminAlerts error={error} success={success} />
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <a
+        href="/admin/users"
+        class="rounded-2xl border border-border bg-surface-raised p-6 transition hover:border-accent/40"
+      >
+        <p class="text-3xl font-bold">{allUsers.length}</p>
+        <p class="mt-1 font-medium">Users</p>
+        <p class="mt-2 text-sm text-ink-muted">View, create, edit accounts and balances</p>
+      </a>
+      <a
+        href="/admin/products"
+        class="rounded-2xl border border-border bg-surface-raised p-6 transition hover:border-accent/40"
+      >
+        <p class="text-3xl font-bold">{productCount}</p>
+        <p class="mt-1 font-medium">Products</p>
+        <p class="mt-2 text-sm text-ink-muted">Create and update catalog items</p>
+      </a>
+      <a
+        href="/admin/logs"
+        class="rounded-2xl border border-border bg-surface-raised p-6 transition hover:border-accent/40"
+      >
+        <p class="text-3xl font-bold">{logCount}</p>
+        <p class="mt-1 font-medium">System log</p>
+        <p class="mt-2 text-sm text-ink-muted">
+          Monitor logins, profile changes, and transactions
+        </p>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

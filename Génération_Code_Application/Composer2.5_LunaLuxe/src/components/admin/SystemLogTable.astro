@@ -1,0 +1,86 @@
+---
+import type { SystemLog } from '@/db/schema';
+import { EVENT_TYPE_LABELS, type EventTypeValue } from '@/lib/monitoring/events';
+import { parseLogMetadata } from '@/lib/monitoring/logger';
+
+interface Props {
+  logs: SystemLog[];
+}
+
+const { logs } = Astro.props;
+
+const severityClass: Record<string, string> = {
+  info: 'bg-blue-100 text-blue-800',
+  success: 'bg-green-100 text-green-800',
+  warning: 'bg-amber-100 text-amber-800',
+  error: 'bg-red-100 text-red-800',
+};
+---
+
+{logs.length === 0 ? (
+  <p class="rounded-2xl border border-luna-200 bg-luna-50 px-6 py-12 text-center text-sm text-luna-500">
+    No log events match your filters.
+  </p>
+) : (
+  <div class="overflow-hidden rounded-2xl border border-luna-200 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[800px] text-left text-sm">
+        <thead class="border-b border-luna-200 bg-luna-50 text-xs uppercase tracking-wider text-luna-500">
+          <tr>
+            <th class="px-4 py-3">Time</th>
+            <th class="px-4 py-3">Severity</th>
+            <th class="px-4 py-3">Event</th>
+            <th class="px-4 py-3">User</th>
+            <th class="px-4 py-3">Message</th>
+            <th class="px-4 py-3">Details</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-luna-100">
+          {logs.map((log) => {
+            const meta = parseLogMetadata(log);
+            const eventLabel =
+              EVENT_TYPE_LABELS[log.eventType as EventTypeValue] ?? log.eventType;
+            return (
+              <tr class="align-top hover:bg-luna-50/50">
+                <td class="whitespace-nowrap px-4 py-3 text-xs text-luna-500">
+                  <time datetime={log.createdAt}>
+                    {new Date(log.createdAt).toLocaleString()}
+                  </time>
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class:list={[
+                      'inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase',
+                      severityClass[log.severity] ?? 'bg-luna-100 text-luna-700',
+                    ]}
+                  >
+                    {log.severity}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-xs font-medium text-luna-700">{eventLabel}</td>
+                <td class="px-4 py-3 text-xs text-luna-600">
+                  {log.username ?? '—'}
+                  {log.userId && <span class="block text-luna-400">#{log.userId}</span>}
+                </td>
+                <td class="max-w-xs px-4 py-3 text-sm text-luna-800">{log.message}</td>
+                <td class="px-4 py-3 text-xs text-luna-500">
+                  {log.ipAddress && <p>IP: {log.ipAddress}</p>}
+                  {meta && (
+                    <details class="mt-1">
+                      <summary class="cursor-pointer text-lavender-600 hover:text-lavender-500">
+                        Metadata
+                      </summary>
+                      <pre class="mt-1 max-w-xs overflow-x-auto rounded bg-luna-100 p-2 text-[10px] text-luna-700">
+                        {JSON.stringify(meta, null, 2)}
+                      </pre>
+                    </details>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}

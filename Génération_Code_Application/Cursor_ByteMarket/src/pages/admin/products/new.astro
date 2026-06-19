@@ -1,0 +1,39 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import ProductForm from "@/components/admin/ProductForm.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import { listCategoriesForSelect } from "@/lib/admin/products";
+
+export const prerender = false;
+
+if (!getAdminActor(Astro.cookies)) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const categories = listCategoriesForSelect();
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title="Add product — Admin" description="Create a catalog product.">
+  <section class="mx-auto max-w-xl px-4 py-12 sm:px-6">
+    <header class="mb-8">
+      <a href="/admin/products" class="text-sm font-medium text-accent hover:underline">
+        ← All products
+      </a>
+      <h1 class="mt-4 text-3xl font-bold tracking-tight">Add product</h1>
+    </header>
+
+    <AdminNav current="products" />
+    <AdminAlerts error={error} success={success} />
+
+    <ProductForm
+      categories={categories}
+      action="/api/admin/products"
+      submitLabel="Create product"
+      actionName="create"
+    />
+  </section>
+</BaseLayout>

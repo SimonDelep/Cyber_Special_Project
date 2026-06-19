@@ -1,0 +1,191 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import FormField from "@/components/auth/FormField.astro";
+import ProfileAvatar from "@/components/profile/ProfileAvatar.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import { findUserById } from "@/lib/auth";
+import { formatPrice } from "@/lib/products";
+
+export const prerender = false;
+
+const actor = getAdminActor(Astro.cookies);
+if (!actor) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const userId = Number(Astro.params.id);
+if (!Number.isFinite(userId)) {
+  return Astro.redirect("/admin/users?error=Invalid+user+ID.");
+}
+
+const target = findUserById(userId);
+if (!target) {
+  return Astro.redirect("/admin/users?error=User+not+found.");
+}
+
+const isSelf = target.id === actor.id;
+const balanceDisplay = (target.balanceCents / 100).toFixed(2);
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+const memberSince = target.createdAt.toLocaleDateString("en-CA", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<BaseLayout title={`@${target.username} — Admin`} description="Edit user account.">
+  <section class="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+    <header class="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center">
+      <ProfileAvatar
+        username={target.username}
+        displayName={target.displayName}
+        avatarUrl={target.avatarUrl}
+        size="lg"
+      />
+      <div>
+        <a href="/admin/users" class="text-sm font-medium text-accent hover:underline">
+          ← All users
+        </a>
+        <h1 class="mt-4 text-3xl font-bold tracking-tight">
+          {target.displayName ?? target.username}
+        </h1>
+        <p class="mt-2 text-ink-muted">
+          @{target.username} · Member since {memberSince}
+        </p>
+      </div>
+    </header>
+
+    <AdminNav current="users" />
+    <AdminAlerts error={error} success={success} />
+
+    <div class="mb-8 rounded-2xl border border-border bg-surface-raised p-6">
+      <p class="text-sm text-ink-muted">Current balance</p>
+      <p class="mt-1 text-2xl font-bold font-mono">{formatPrice(target.balanceCents)}</p>
+    </div>
+
+    <form
+      method="post"
+      action={`/api/admin/users/${target.id}`}
+      class="mb-8 space-y-5 rounded-2xl border border-border bg-surface-raised p-6"
+    >
+      <input type="hidden" name="action" value="update" />
+      <h2 class="text-lg font-semibold">Profile</h2>
+      <FormField
+        id="displayName"
+        name="displayName"
+        label="Display name"
+        value={target.displayName ?? ""}
+      />
+      <FormField
+        id="email"
+        name="email"
+        label="Email"
+        type="email"
+        value={target.email ?? ""}
+      />
+      <FormField
+        id="password"
+        name="password"
+        label="New password"
+        type="password"
+        autocomplete="new-password"
+        hint="Leave blank to keep the current password."
+      />
+      {
+        !isSelf && (
+          <div>
+            <label for="role" class="mb-1.5 block text-sm font-medium text-ink">Role</label>
+            <select
+              id="role"
+              name="role"
+              class="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm capitalize"
+            >
+              <option value="user" selected={target.role === "user"}>user</option>
+              <option value="admin" selected={target.role === "admin"}>admin</option>
+            </select>
+          </div>
+        )
+      }
+      <button
+        type="submit"
+        class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-surface transition hover:bg-accent-dim"
+      >
+        Save profile
+      </button>
+    </form>
+
+    <div class="mb-8 grid gap-6 sm:grid-cols-2">
+      <form
+        method="post"
+        action={`/api/admin/users/${target.id}`}
+        class="space-y-4 rounded-2xl border border-border bg-surface-raised p-6"
+      >
+        <input type="hidden" name="action" value="balance-adjust" />
+        <h2 class="text-lg font-semibold">Adjust balance</h2>
+        <FormField
+          id="adjustAmount"
+          name="adjustAmount"
+          label="Amount (CAD)"
+          type="number"
+          step="0.01"
+          required
+          placeholder="-10.00"
+          hint="Use negative values to debit, positive to credit."
+        />
+        <button
+          type="submit"
+          class="w-full rounded-lg border border-border py-2 text-sm transition hover:border-accent/40"
+        >
+          Apply adjustment
+        </button>
+      </form>
+
+      <form
+        method="post"
+        action={`/api/admin/users/${target.id}`}
+        class="space-y-4 rounded-2xl border border-border bg-surface-raised p-6"
+      >
+        <input type="hidden" name="action" value="balance-set" />
+        <h2 class="text-lg font-semibold">Set balance</h2>
+        <FormField
+          id="setBalance"
+          name="setBalance"
+          label="New balance (CAD)"
+          type="number"
+          step="0.01"
+          min="0"
+          required
+          value={balanceDisplay}
+        />
+        <button
+          type="submit"
+          class="w-full rounded-lg border border-border py-2 text-sm transition hover:border-accent/40"
+        >
+          Set balance
+        </button>
+      </form>
+    </div>
+
+    {
+      !isSelf && (
+        <form method="post" action={`/api/admin/users/${target.id}`} class="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
+          <input type="hidden" name="action" value="delete" />
+          <h2 class="text-lg font-semibold text-red-200">Danger zone</h2>
+          <p class="mt-2 text-sm text-ink-muted">
+            Permanently delete this account and all sessions.
+          </p>
+          <button
+            type="submit"
+            class="mt-4 rounded-lg border border-red-500/40 px-4 py-2 text-sm text-red-200 transition hover:bg-red-500/10"
+            onclick="return confirm('Delete this user permanently?')"
+          >
+            Delete user
+          </button>
+        </form>
+      )
+    }
+  </section>
+</BaseLayout>

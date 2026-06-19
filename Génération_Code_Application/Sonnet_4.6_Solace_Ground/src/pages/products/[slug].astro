@@ -1,0 +1,85 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import AddToCartButton from '@/components/solid/AddToCartButton';
+import ProductReviews from '@/components/solid/ProductReviews';
+import { getProductBySlug, queryCatalog } from '@/lib/catalog/query';
+import { formatPrice } from '@/lib/utils';
+
+const { slug } = Astro.params;
+const user = Astro.locals.user;
+
+const product = slug ? getProductBySlug(slug) : undefined;
+if (!product) {
+  return Astro.redirect('/catalog');
+}
+
+const catalogEntry = queryCatalog({}).find((p) => p.id === product.id);
+const categoryLabel =
+  product.category === 'yoga-mat' ? 'Yoga mat' : 'Meditation cushion';
+---
+
+<BaseLayout title={`${product.name} — Solace Ground`}>
+  <Header user={user} />
+  <main class="flex-1">
+    <div class="mx-auto max-w-6xl px-6 py-12">
+      <nav class="text-sm text-cork-500">
+        <a href="/catalog" class="hover:text-cork-800">Catalog</a>
+        <span class="mx-2">/</span>
+        <span class="text-cork-800">{product.name}</span>
+      </nav>
+
+      <div class="mt-8 grid gap-10 lg:grid-cols-2">
+        <div class="overflow-hidden rounded-2xl border border-cork-200 bg-cork-100">
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt=""
+              class="aspect-square w-full object-cover"
+            />
+          ) : (
+            <div class="flex aspect-square items-center justify-center font-serif text-6xl text-cork-400">
+              {product.category === 'yoga-mat' ? 'Mat' : 'Cushion'}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <p class="text-xs font-medium uppercase tracking-wider text-sage-600">{categoryLabel}</p>
+          <h1 class="mt-2 font-serif text-3xl text-cork-900 md:text-4xl">{product.name}</h1>
+          {
+            catalogEntry && catalogEntry.averageRating !== null && (
+              <p class="mt-2 text-sm text-cork-600">
+                ★ {catalogEntry.averageRating} ({catalogEntry.reviewCount} review
+                {catalogEntry.reviewCount === 1 ? '' : 's'})
+              </p>
+            )
+          }
+          <p class="mt-4 text-lg font-semibold text-cork-900">{formatPrice(product.priceCents)}</p>
+          <p class="mt-4 leading-relaxed text-cork-600">{product.description}</p>
+          <p class="mt-2 text-sm text-cork-500">
+            {product.inStock ? 'In stock' : 'Currently out of stock'}
+          </p>
+          {
+            product.inStock && (
+              <div class="mt-6">
+                <AddToCartButton
+                  client:load
+                  productId={product.id}
+                  name={product.name}
+                  priceCents={product.priceCents}
+                />
+              </div>
+            )
+          }
+        </div>
+      </div>
+
+      <div class="mt-16 border-t border-cork-200 pt-12">
+        <ProductReviews client:load productSlug={product.slug} user={user} />
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

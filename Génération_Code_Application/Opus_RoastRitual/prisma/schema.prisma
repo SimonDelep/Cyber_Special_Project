@@ -1,0 +1,220 @@
+// RoastRitual — specialty coffee & herbal tea e-commerce
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductCategory {
+  COFFEE
+  TEA
+}
+
+enum SubscriptionInterval {
+  MONTHLY
+  QUARTERLY
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SystemLogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+enum SystemLogCategory {
+  AUTH
+  PROFILE
+  TRANSACTION
+  ADMIN
+  SYSTEM
+}
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  email         String?   @unique
+  emailVerified DateTime?
+  name          String?
+  passwordHash  String
+  image         String?
+  bio           String?
+  role          Role      @default(USER)
+  balanceCents  Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts            Account[]
+  sessions            Session[]
+  orders              Order[]
+  reviews             Review[]
+  systemLogs          SystemLog[]
+  balanceAdjustments  BalanceAdjustment[] @relation("UserBalance")
+  balanceAdjustmentsMade BalanceAdjustment[] @relation("AdminBalance")
+}
+
+model SystemLog {
+  id        String            @id @default(cuid())
+  category  SystemLogCategory
+  action    String
+  level     SystemLogLevel    @default(INFO)
+  message   String
+  userId    String?
+  username  String?
+  ipAddress String?
+  userAgent String?
+  metadata  Json?
+  success   Boolean           @default(true)
+  createdAt DateTime          @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt(sort: Desc)])
+  @@index([category])
+  @@index([action])
+  @@index([userId])
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  userId     String
+  totalCents Int
+  createdAt  DateTime @default(now())
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items OrderItem[]
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  productId  String
+  quantity   Int
+  priceCents Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model BalanceAdjustment {
+  id             String   @id @default(cuid())
+  userId         String
+  adminId        String
+  adjustmentCents Int
+  balanceAfter   Int
+  reason         String?
+  createdAt      DateTime @default(now())
+
+  user  User @relation("UserBalance", fields: [userId], references: [id], onDelete: Cascade)
+  admin User @relation("AdminBalance", fields: [adminId], references: [id], onDelete: Restrict)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  description String
+  category    ProductCategory
+  priceCents  Int
+  imageUrl    String?
+  origin      String?
+  roastLevel  String?
+  isEthical   Boolean         @default(true)
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  subscriptionItems SubscriptionBoxItem[]
+  orderItems        OrderItem[]
+  reviews           Review[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  rating    Int
+  title     String?
+  body      String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, userId])
+  @@index([productId])
+}
+
+model SubscriptionBox {
+  id          String               @id @default(cuid())
+  slug        String               @unique
+  name        String
+  description String
+  tagline     String?
+  priceCents  Int
+  interval    SubscriptionInterval @default(MONTHLY)
+  imageUrl    String?
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  items SubscriptionBoxItem[]
+}
+
+model SubscriptionBoxItem {
+  id                String @id @default(cuid())
+  subscriptionBoxId String
+  productId         String
+  quantity          Int    @default(1)
+
+  subscriptionBox SubscriptionBox @relation(fields: [subscriptionBoxId], references: [id], onDelete: Cascade)
+  product         Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([subscriptionBoxId, productId])
+}

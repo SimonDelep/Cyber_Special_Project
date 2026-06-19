@@ -1,0 +1,88 @@
+---
+import {
+  formatObservedAt,
+  type ChicoutimiWeather,
+} from "@/lib/weather/chicoutimi";
+
+interface Props {
+  weather: ChicoutimiWeather | null;
+}
+
+const { weather } = Astro.props;
+---
+
+<aside
+  class="rounded-xl border border-border bg-surface-raised/90 p-5 shadow-lg backdrop-blur-sm sm:p-6"
+  aria-label="Météo à Chicoutimi"
+>
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-widest text-accent">
+        Météo locale
+      </p>
+      <h2 class="mt-1 text-lg font-semibold text-ink">Chicoutimi</h2>
+    </div>
+    {
+      weather && (
+        <span class="text-4xl leading-none" aria-hidden="true">
+          {weather.conditionIcon}
+        </span>
+      )
+    }
+  </div>
+
+  {
+    weather ? (
+      <>
+        <p class="mt-4 flex items-baseline gap-2">
+          <span class="text-4xl font-bold tabular-nums tracking-tight text-ink">
+            {weather.temperatureC}°
+          </span>
+          <span class="text-lg text-ink-muted">C</span>
+        </p>
+        <p class="mt-1 text-sm font-medium text-ink">{weather.conditionLabel}</p>
+        <dl class="mt-5 grid grid-cols-2 gap-3 text-sm">
+          <div class="rounded-lg bg-surface-muted/50 px-3 py-2">
+            <dt class="text-xs text-ink-muted">Ressenti</dt>
+            <dd class="font-medium tabular-nums text-ink">
+              {weather.feelsLikeC}°C
+            </dd>
+          </div>
+          <div class="rounded-lg bg-surface-muted/50 px-3 py-2">
+            <dt class="text-xs text-ink-muted">Humidité</dt>
+            <dd class="font-medium tabular-nums text-ink">
+              {weather.humidityPercent}%
+            </dd>
+          </div>
+          <div class="rounded-lg bg-surface-muted/50 px-3 py-2">
+            <dt class="text-xs text-ink-muted">Vent</dt>
+            <dd class="font-medium tabular-nums text-ink">
+              {weather.windSpeedKmh} km/h
+            </dd>
+          </div>
+          <div class="rounded-lg bg-surface-muted/50 px-3 py-2">
+            <dt class="text-xs text-ink-muted">Mise à jour</dt>
+            <dd class="font-medium text-ink text-xs leading-snug">
+              {formatObservedAt(weather.observedAt)}
+            </dd>
+          </div>
+        </dl>
+        <p class="mt-4 text-xs text-ink-muted/80">
+          Données{" "}
+          <a
+            href="https://open-meteo.com/"
+            class="text-accent hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open-Meteo
+          </a>
+        </p>
+      </>
+    ) : (
+      <p class="mt-4 text-sm text-ink-muted">
+        Météo temporairement indisponible. Réessayez plus tard.
+      </p>
+    )
+  }
+</aside>

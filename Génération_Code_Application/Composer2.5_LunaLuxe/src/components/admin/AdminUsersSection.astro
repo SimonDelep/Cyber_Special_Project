@@ -1,0 +1,181 @@
+---
+import type { PublicUser } from '@/db/schema';
+import FormField from '@/components/FormField.astro';
+import { formatCurrency } from '@/lib/format';
+
+interface Props {
+  users: PublicUser[];
+  currentAdminId: number;
+}
+
+const { users, currentAdminId } = Astro.props;
+
+const inputClass =
+  'mt-1 w-full rounded-xl border border-luna-200 bg-luna-50 px-4 py-2.5 text-sm text-luna-900 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-400/20';
+---
+
+<section class="space-y-4">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="font-serif text-2xl font-semibold text-luna-900">User management</h2>
+      <p class="text-sm text-luna-500">{users.length} account{users.length !== 1 ? 's' : ''}</p>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    {users.map((u) => (
+      <details class="group overflow-hidden rounded-2xl border border-luna-200 bg-white shadow-sm">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 marker:content-none hover:bg-luna-50/50">
+          <div class="flex items-center gap-4">
+            {u.avatarUrl ? (
+              <img src={u.avatarUrl} alt="" class="h-10 w-10 rounded-full object-cover" />
+            ) : (
+              <span class="flex h-10 w-10 items-center justify-center rounded-full bg-luna-200 text-sm font-semibold">
+                {u.displayName.charAt(0)}
+              </span>
+            )}
+            <div>
+              <p class="font-medium text-luna-900">{u.displayName}</p>
+              <p class="text-xs text-luna-500">@{u.username} · {u.email}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 text-right">
+            <div>
+              <p class="text-xs text-luna-500">Balance</p>
+              <p class="font-semibold text-luna-800">{formatCurrency(u.balance)}</p>
+            </div>
+            <span
+              class:list={[
+                'rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize',
+                u.role === 'admin' ? 'bg-lavender-100 text-lavender-700' : 'bg-luna-100 text-luna-700',
+              ]}
+            >
+              {u.role}
+            </span>
+            <span class="text-luna-400 transition-transform group-open:rotate-180">▼</span>
+          </div>
+        </summary>
+
+        <div class="space-y-6 border-t border-luna-200 px-6 py-6">
+          <!-- Edit profile & role -->
+          <form action="/api/admin/users/update" method="post" class="grid gap-4 md:grid-cols-2">
+            <input type="hidden" name="userId" value={u.id} />
+            <FormField label="Display name" name="displayName" value={u.displayName} required />
+            <FormField label="Email" name="email" type="email" value={u.email} required />
+            <div class="md:col-span-2">
+              <FormField label="Bio" name="bio" value={u.bio} rows={2} />
+            </div>
+            <div>
+              <label for={`role-${u.id}`} class="block text-sm font-medium text-luna-700">Role</label>
+              <select
+                id={`role-${u.id}`}
+                name="role"
+                class={inputClass}
+                disabled={u.id === currentAdminId}
+              >
+                <option value="user" selected={u.role === 'user'}>User</option>
+                <option value="admin" selected={u.role === 'admin'}>Admin</option>
+              </select>
+              {u.id === currentAdminId && (
+                <p class="mt-1 text-xs text-luna-500">Your admin role cannot be changed here.</p>
+              )}
+            </div>
+            <div class="flex items-end">
+              <button
+                type="submit"
+                class="rounded-full bg-luna-800 px-6 py-2.5 text-sm font-semibold text-luna-50 hover:bg-luna-700"
+              >
+                Save user
+              </button>
+            </div>
+          </form>
+
+          <!-- Balance -->
+          <div class="rounded-xl border border-luna-200 bg-luna-50/50 p-4">
+            <h3 class="text-sm font-semibold text-luna-800">Account balance</h3>
+            <p class="mt-1 text-xs text-luna-500">
+              Set an exact balance or apply a credit/debit adjustment.
+            </p>
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <form action="/api/admin/users/balance" method="post" class="flex flex-wrap items-end gap-3">
+                <input type="hidden" name="userId" value={u.id} />
+                <input type="hidden" name="mode" value="set" />
+                <div class="min-w-[140px] flex-1">
+                  <label class="block text-xs font-medium text-luna-600">Set balance (CAD)</label>
+                  <input
+                    type="number"
+                    name="balance"
+                    min="0"
+                    step="0.01"
+                    value={u.balance}
+                    required
+                    class={inputClass}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="rounded-full border border-luna-300 bg-white px-4 py-2.5 text-sm font-medium text-luna-800 hover:bg-luna-100"
+                >
+                  Set
+                </button>
+              </form>
+
+              <form action="/api/admin/users/balance" method="post" class="flex flex-wrap items-end gap-3">
+                <input type="hidden" name="userId" value={u.id} />
+                <input type="hidden" name="mode" value="adjust" />
+                <div class="min-w-[140px] flex-1">
+                  <label class="block text-xs font-medium text-luna-600">Adjust (+/−)</label>
+                  <input
+                    type="number"
+                    name="balanceDelta"
+                    step="0.01"
+                    placeholder="e.g. 25 or -10"
+                    required
+                    class={inputClass}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="rounded-full bg-lavender-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-lavender-400"
+                >
+                  Apply
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Delete -->
+          {u.id !== currentAdminId && (
+            <form
+              action="/api/admin/users/delete"
+              method="post"
+              class="rounded-xl border border-red-200 bg-red-50/30 p-4"
+              onsubmit="return confirm('Permanently delete this user?');"
+            >
+              <input type="hidden" name="userId" value={u.id} />
+              <p class="text-sm font-medium text-red-900">Delete user</p>
+              <p class="mt-1 text-xs text-red-700">
+                Type <strong>{u.username}</strong> to confirm.
+              </p>
+              <div class="mt-3 flex flex-wrap gap-3">
+                <input
+                  type="text"
+                  name="confirmUsername"
+                  placeholder={u.username}
+                  required
+                  class="min-w-[200px] flex-1 rounded-xl border border-red-200 px-4 py-2 text-sm"
+                />
+                <button
+                  type="submit"
+                  class="rounded-full border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
+                >
+                  Delete user
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </details>
+    ))}
+  </div>
+</section>

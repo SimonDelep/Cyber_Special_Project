@@ -1,0 +1,98 @@
+---
+import { productCategories } from '@/db/schema';
+import type { ProductSort } from '@/lib/products';
+
+interface Props {
+  q: string;
+  category: string;
+  minPrice: string;
+  maxPrice: string;
+  featuredOnly: boolean;
+  sort: ProductSort;
+  resultCount: number;
+}
+
+const { q, category, minPrice, maxPrice, featuredOnly, sort, resultCount } = Astro.props;
+
+const inputClass =
+  'w-full rounded-xl border border-luna-200 bg-white px-4 py-2.5 text-sm text-luna-900 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-400/20';
+---
+
+<form method="get" action="/catalog" class="rounded-2xl border border-luna-200 bg-white p-6 shadow-sm">
+  <div class="mb-4 flex items-center justify-between">
+    <h2 class="font-serif text-lg font-semibold text-luna-900">Search &amp; filter</h2>
+    <span class="text-sm text-luna-500">{resultCount} result{resultCount !== 1 ? 's' : ''}</span>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div class="md:col-span-2 lg:col-span-3">
+      <label for="q" class="block text-sm font-medium text-luna-700">Search</label>
+      <input
+        type="search"
+        id="q"
+        name="q"
+        value={q}
+        placeholder="Search by name or description…"
+        class={inputClass}
+      />
+    </div>
+
+    <div>
+      <label for="category" class="block text-sm font-medium text-luna-700">Category</label>
+      <select id="category" name="category" class={inputClass}>
+        <option value="">All categories</option>
+        {productCategories.map((c) => (
+          <option value={c} selected={category === c}>{c}</option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label for="minPrice" class="block text-sm font-medium text-luna-700">Min price (CAD)</label>
+      <input type="number" id="minPrice" name="minPrice" min="0" step="1" value={minPrice} class={inputClass} />
+    </div>
+
+    <div>
+      <label for="maxPrice" class="block text-sm font-medium text-luna-700">Max price (CAD)</label>
+      <input type="number" id="maxPrice" name="maxPrice" min="0" step="1" value={maxPrice} class={inputClass} />
+    </div>
+
+    <div>
+      <label for="sort" class="block text-sm font-medium text-luna-700">Sort by</label>
+      <select id="sort" name="sort" class={inputClass}>
+        <option value="newest" selected={sort === 'newest'}>Newest</option>
+        <option value="price-asc" selected={sort === 'price-asc'}>Price: low to high</option>
+        <option value="price-desc" selected={sort === 'price-desc'}>Price: high to low</option>
+        <option value="name" selected={sort === 'name'}>Name A–Z</option>
+      </select>
+    </div>
+
+    <div class="flex items-end">
+      <label class="flex items-center gap-2 text-sm text-luna-700">
+        <input
+          type="checkbox"
+          name="featured"
+          value="1"
+          checked={featuredOnly}
+          class="rounded border-luna-300"
+        />
+        Featured only
+      </label>
+    </div>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-3">
+    <button
+      type="submit"
+      class="rounded-full bg-luna-800 px-6 py-2.5 text-sm font-semibold text-luna-50 hover:bg-luna-700"
+    >
+      Apply filters
+    </button>
+    <a
+      href="/catalog"
+      class="rounded-full border border-luna-300 px-6 py-2.5 text-sm font-medium text-luna-700 hover:bg-luna-100"
+    >
+      Clear all
+    </a>
+  </div>
+</form>

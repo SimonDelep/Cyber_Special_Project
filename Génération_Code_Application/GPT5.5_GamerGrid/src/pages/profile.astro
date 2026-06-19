@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProfileForm from '@/components/solid/ProfileForm';
+import { requireAuthPage } from '@/lib/auth/guards';
+import { isAdmin } from '@/lib/auth/rbac';
+
+const user = requireAuthPage(Astro);
+if (user instanceof Response) return user;
+
+const adminError = Astro.url.searchParams.get('error') === 'admin_required';
+---
+
+<BaseLayout title="My profile — VoltStream" description="View and manage your VoltStream profile.">
+  <section class="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16">
+    {adminError && (
+      <p class="mb-6 rounded-lg border border-amber-500/30 bg-amber-950/30 px-4 py-3 text-sm text-amber-200">
+        Administrator access is required for that page.
+      </p>
+    )}
+
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-white">Your profile</h1>
+      <p class="mt-2 text-slate-400">Update your details, profile picture, or password.</p>
+      {isAdmin(user) && (
+        <a
+          href="/admin"
+          class="mt-4 inline-flex text-sm font-medium text-volt-400 hover:text-volt-300"
+        >
+          Open admin panel →
+        </a>
+      )}
+    </div>
+
+    <ProfileForm user={user} client:load />
+  </section>
+</BaseLayout>

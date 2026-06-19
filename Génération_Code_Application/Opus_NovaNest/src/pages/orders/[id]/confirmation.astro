@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import OrderConfirmation from '../../../components/solid/OrderConfirmation';
+import { getOrderById } from '../../../lib/db/orders';
+import { findUserById } from '../../../lib/db/users';
+
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect(`/login?redirect=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+const orderId = Number(Astro.params.id);
+if (!Number.isInteger(orderId) || orderId < 1) {
+  return Astro.redirect('/cart');
+}
+
+const order = getOrderById(orderId);
+if (!order || order.userId !== user.id) {
+  return Astro.redirect('/cart');
+}
+
+const refreshed = findUserById(user.id);
+const newBalanceCents = refreshed?.balanceCents ?? user.balanceCents;
+---
+
+<BaseLayout
+  title={`Order ${order.invoiceNumber} — NovaNest`}
+  description="Your order was placed successfully."
+>
+  <section class="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+    <OrderConfirmation
+      client:load
+      orderId={order.id}
+      invoiceNumber={order.invoiceNumber}
+      invoiceUrl={`/api/orders/${order.id}/invoice`}
+      totalCents={order.totalCents}
+      createdAt={order.createdAt}
+      items={order.items.map((i) => ({
+        productName: i.productName,
+        quantity: i.quantity,
+        unitPriceCents: i.unitPriceCents,
+        lineTotalCents: i.lineTotalCents,
+      }))}
+      newBalanceCents={newBalanceCents}
+    />
+  </section>
+</BaseLayout>

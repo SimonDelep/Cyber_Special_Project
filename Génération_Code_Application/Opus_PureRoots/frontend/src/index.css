@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --color-forest-50: #f3f8f4;
+  --color-forest-100: #e2ede5;
+  --color-forest-200: #c5dbc9;
+  --color-forest-600: #2d5a3d;
+  --color-forest-700: #234830;
+  --color-forest-800: #1a3624;
+  --color-sage-400: #7cb87c;
+  --color-sage-500: #5fa35f;
+  --color-cream: #faf8f4;
+  --color-stone-600: #57534e;
+}
+
+body {
+  @apply bg-cream font-sans text-forest-800 antialiased;
+}

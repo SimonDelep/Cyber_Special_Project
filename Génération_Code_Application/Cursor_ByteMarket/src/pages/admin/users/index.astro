@@ -1,0 +1,84 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import { listUsers } from "@/lib/auth";
+import { formatPrice } from "@/lib/products";
+
+export const prerender = false;
+
+const actor = getAdminActor(Astro.cookies);
+if (!actor) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const allUsers = listUsers();
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title="Users — Admin" description="Manage ByteMarket users.">
+  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="font-mono text-sm uppercase tracking-widest text-accent">Administration</p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight">Users</h1>
+        <p class="mt-2 text-ink-muted">{allUsers.length} registered accounts</p>
+      </div>
+      <a
+        href="/admin/users/new"
+        class="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-medium text-surface transition hover:bg-accent-dim"
+      >
+        Create user
+      </a>
+    </header>
+
+    <AdminNav current="users" />
+    <AdminAlerts error={error} success={success} />
+
+    <div class="overflow-hidden rounded-2xl border border-border bg-surface-raised">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-border bg-surface-muted/40 text-ink-muted">
+          <tr>
+            <th class="px-4 py-3 font-medium">User</th>
+            <th class="hidden px-4 py-3 font-medium sm:table-cell">Email</th>
+            <th class="px-4 py-3 font-medium">Balance</th>
+            <th class="px-4 py-3 font-medium">Role</th>
+            <th class="px-4 py-3 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {
+            allUsers.map((u) => {
+              const isSelf = u.id === actor.id;
+              return (
+                <tr>
+                  <td class="px-4 py-4">
+                    <p class="font-medium">{u.displayName ?? u.username}</p>
+                    <p class="text-ink-muted">@{u.username}</p>
+                  </td>
+                  <td class="hidden px-4 py-4 text-ink-muted sm:table-cell">
+                    {u.email ?? "—"}
+                  </td>
+                  <td class="px-4 py-4 font-mono text-sm">
+                    {formatPrice(u.balanceCents)}
+                  </td>
+                  <td class="px-4 py-4 capitalize">{u.role}</td>
+                  <td class="px-4 py-4 text-right">
+                    <a
+                      href={`/admin/users/${u.id}`}
+                      class="rounded-lg border border-border px-3 py-1.5 text-xs transition hover:border-accent/40"
+                    >
+                      {isSelf ? "View" : "Edit"}
+                    </a>
+                  </td>
+                </tr>
+              );
+            })
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</BaseLayout>

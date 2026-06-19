@@ -1,0 +1,43 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  error?: string | null;
+  success?: string | null;
+}
+
+const { title, subtitle, error, success } = Astro.props;
+---
+
+<section class="mx-auto flex min-h-[calc(100vh-8rem)] max-w-md flex-col justify-center px-4 py-12 sm:px-6">
+  <div class="rounded-2xl border border-border bg-surface-raised p-8 shadow-xl shadow-black/20">
+    <header class="mb-8 text-center">
+      <h1 class="text-2xl font-bold tracking-tight">{title}</h1>
+      {subtitle && <p class="mt-2 text-sm text-ink-muted">{subtitle}</p>}
+    </header>
+
+    {
+      error && (
+        <p
+          class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+          role="alert"
+        >
+          {error}
+        </p>
+      )
+    }
+
+    {
+      success && (
+        <p
+          class="mb-6 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"
+          role="status"
+        >
+          {success}
+        </p>
+      )
+    }
+
+    <slot />
+  </div>
+</section>

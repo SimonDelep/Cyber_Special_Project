@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AuthForm from '../components/solid/AuthForm';
+---
+
+<BaseLayout title="Sign up — NovaNest" description="Create your NovaNest account.">
+  <section class="mx-auto max-w-md px-4 py-16 sm:px-6">
+    <h1 class="font-display text-3xl font-bold text-white">Create account</h1>
+    <p class="mt-2 text-nest-100/60">
+      Join NovaNest to save your profile and manage your smart home setup.
+    </p>
+
+    <div class="mt-8">
+      <AuthForm client:load mode="register" redirectTo="/profile" />
+    </div>
+
+    <p class="mt-8 text-center text-sm text-nest-100/60">
+      Already have an account?
+      <a href="/login" class="font-medium text-accent hover:underline">Log in</a>
+    </p>
+  </section>
+</BaseLayout>

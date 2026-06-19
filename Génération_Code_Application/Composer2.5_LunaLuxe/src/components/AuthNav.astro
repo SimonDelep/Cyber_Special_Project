@@ -1,0 +1,60 @@
+---
+import { canAccessAdmin } from '@/lib/auth/rbac';
+
+const user = Astro.locals.user ?? null;
+---
+
+<div class="flex items-center gap-3">
+  {user ? (
+    <>
+      <a
+        href="/profile"
+        class="flex items-center gap-2 text-sm font-medium text-luna-700 transition-colors hover:text-luna-900"
+      >
+        {user.avatarUrl ? (
+          <img
+            src={user.avatarUrl}
+            alt=""
+            class="h-8 w-8 rounded-full object-cover ring-2 ring-luna-200"
+          />
+        ) : (
+          <span class="flex h-8 w-8 items-center justify-center rounded-full bg-luna-200 text-xs font-semibold text-luna-700">
+            {user.displayName.charAt(0).toUpperCase()}
+          </span>
+        )}
+        <span class="hidden sm:inline">{user.displayName}</span>
+      </a>
+      {canAccessAdmin(user.role) && (
+        <a
+          href="/admin"
+          class="hidden text-sm font-medium text-lavender-600 transition-colors hover:text-lavender-500 md:inline"
+        >
+          Admin
+        </a>
+      )}
+      <form action="/api/auth/logout" method="post">
+        <button
+          type="submit"
+          class="text-sm font-medium text-luna-500 transition-colors hover:text-luna-800"
+        >
+          Logout
+        </button>
+      </form>
+    </>
+  ) : (
+    <>
+      <a
+        href="/login"
+        class="text-sm font-medium text-luna-600 transition-colors hover:text-luna-900"
+      >
+        Login
+      </a>
+      <a
+        href="/register"
+        class="rounded-full border border-luna-300 px-4 py-2 text-sm font-medium text-luna-800 transition-colors hover:border-luna-400 hover:bg-luna-100"
+      >
+        Register
+      </a>
+    </>
+  )}
+</div>

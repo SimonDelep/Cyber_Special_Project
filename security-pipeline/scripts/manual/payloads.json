@@ -1,0 +1,33 @@
+{
+  "sqli": [
+    "' OR '1'='1",
+    "' OR 1=1--",
+    "\"; DROP TABLE users;--",
+    "1; SELECT * FROM users--"
+  ],
+  "xss": [
+    "<script>alert(1)</script>",
+    "<img src=x onerror=alert(1)>",
+    "javascript:alert(1)"
+  ],
+  "pathTraversal": [
+    "../../../etc/passwd",
+    "..%2F..%2F..%2Fetc%2Fpasswd",
+    "..\\..\\..\\windows\\win.ini",
+    "....//....//....//etc/passwd"
+  ],
+  "maliciousFilenames": [
+    "../../evil.pdf",
+    "evil.php.jpg",
+    "..\\..\\shell.aspx",
+    "test%00.pdf"
+  ],
+  "ssrf": [
+    "http://127.0.0.1:22",
+    "http://127.0.0.1/",
+    "http://169.254.169.254/latest/meta-data/",
+    "http://localhost/admin"
+  ],
+  "csvInjection": "=cmd|' /C calc'!A0",
+  "oversizedUploadBytes": 11534336
+}

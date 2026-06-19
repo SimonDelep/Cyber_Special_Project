@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import CatalogBrowser from '@/components/solid/CatalogBrowser';
+
+const user = Astro.locals.user;
+---
+
+<BaseLayout title="Catalog — Solace Ground">
+  <Header user={user} />
+  <main class="flex-1">
+    <div class="mx-auto max-w-6xl px-6 py-16">
+      <h1 class="font-serif text-3xl text-cork-900 md:text-4xl">Product catalog</h1>
+      <p class="mt-2 max-w-2xl text-cork-600">
+        Search and filter our cork mats, cushions, and bolsters. Open any product to read reviews or add your own.
+      </p>
+      <div class="mt-10">
+        <CatalogBrowser client:load />
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,63 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AuthCard from "@/components/auth/AuthCard.astro";
+import FormField from "@/components/auth/FormField.astro";
+import { PASSWORD_MIN, USERNAME_MAX, USERNAME_MIN } from "@/lib/auth";
+
+const error = Astro.url.searchParams.get("error");
+---
+
+<BaseLayout title="Register — ByteMarket" description="Create your ByteMarket account.">
+  <AuthCard
+    title="Create account"
+    subtitle="Join ByteMarket to manage your profile and orders."
+    error={error}
+  >
+    <form method="post" action="/api/auth/register" class="space-y-5">
+      <FormField
+        id="username"
+        name="username"
+        label="Username"
+        autocomplete="username"
+        required
+        minlength={USERNAME_MIN}
+        maxlength={USERNAME_MAX}
+        hint="Letters, numbers, and underscores only."
+      />
+      <FormField
+        id="password"
+        name="password"
+        label="Password"
+        type="password"
+        autocomplete="new-password"
+        required
+        minlength={PASSWORD_MIN}
+      />
+      <FormField
+        id="display_name"
+        name="display_name"
+        label="Display name"
+        autocomplete="name"
+        placeholder="Optional"
+      />
+      <FormField
+        id="email"
+        name="email"
+        label="Email"
+        type="email"
+        autocomplete="email"
+        placeholder="Optional"
+      />
+      <button
+        type="submit"
+        class="w-full rounded-lg bg-accent py-2.5 text-sm font-semibold text-surface transition hover:bg-accent-dim"
+      >
+        Create account
+      </button>
+    </form>
+    <p class="mt-6 text-center text-sm text-ink-muted">
+      Already have an account?
+      <a href="/login" class="font-medium text-accent hover:underline">Sign in</a>
+    </p>
+  </AuthCard>
+</BaseLayout>

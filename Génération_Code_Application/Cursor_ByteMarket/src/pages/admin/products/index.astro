@@ -1,0 +1,86 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import AdminAlerts from "@/components/admin/AdminAlerts.astro";
+import AdminNav from "@/components/admin/AdminNav.astro";
+import { getAdminActor } from "@/lib/admin/guard";
+import { listAllProducts } from "@/lib/admin/products";
+import { formatPrice } from "@/lib/products";
+
+export const prerender = false;
+
+if (!getAdminActor(Astro.cookies)) {
+  return Astro.redirect("/?error=admin_required");
+}
+
+const products = listAllProducts();
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title="Products — Admin" description="Manage ByteMarket products.">
+  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="font-mono text-sm uppercase tracking-widest text-accent">Administration</p>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight">Products</h1>
+        <p class="mt-2 text-ink-muted">{products.length} catalog items</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a
+          href="/admin/products/import"
+          class="inline-flex rounded-lg border border-border px-4 py-2 text-sm font-medium text-ink transition hover:border-accent/40"
+        >
+          Import CSV
+        </a>
+        <a
+          href="/admin/products/new"
+          class="inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-medium text-surface transition hover:bg-accent-dim"
+        >
+          Add product
+        </a>
+      </div>
+    </header>
+
+    <AdminNav current="products" />
+    <AdminAlerts error={error} success={success} />
+
+    <div class="overflow-hidden rounded-2xl border border-border bg-surface-raised">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-border bg-surface-muted/40 text-ink-muted">
+          <tr>
+            <th class="px-4 py-3 font-medium">Product</th>
+            <th class="hidden px-4 py-3 font-medium md:table-cell">Category</th>
+            <th class="px-4 py-3 font-medium">Price</th>
+            <th class="px-4 py-3 font-medium">Stock</th>
+            <th class="px-4 py-3 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {
+            products.map((p) => (
+              <tr>
+                <td class="px-4 py-4">
+                  <p class="font-medium">{p.name}</p>
+                  <p class="font-mono text-xs text-ink-muted">{p.slug}</p>
+                </td>
+                <td class="hidden px-4 py-4 text-ink-muted md:table-cell">
+                  {p.categoryName ?? "—"}
+                </td>
+                <td class="px-4 py-4">{formatPrice(p.priceCents)}</td>
+                <td class="px-4 py-4">{p.stock}</td>
+                <td class="px-4 py-4 text-right">
+                  <a
+                    href={`/admin/products/${p.id}`}
+                    class="rounded-lg border border-border px-3 py-1.5 text-xs transition hover:border-accent/40"
+                  >
+                    Edit
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</BaseLayout>

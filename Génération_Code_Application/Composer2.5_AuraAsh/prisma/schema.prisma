@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductCategory {
+  CANDLES
+  INCENSE_HOLDERS
+  DIFFUSERS
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum EventCategory {
+  AUTH
+  PROFILE
+  TRANSACTION
+  ADMIN
+}
+
+enum EventStatus {
+  SUCCESS
+  FAILURE
+  WARNING
+}
+
+model User {
+  id             String    @id @default(cuid())
+  username       String    @unique
+  email          String?   @unique
+  passwordHash   String
+  firstName      String?
+  lastName       String?
+  bio            String?
+  profilePicture String?
+  balance        Decimal   @default(0) @db.Decimal(10, 2)
+  role           Role      @default(USER)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sessions       Session[]
+  reviews        Review[]
+  orders         Order[]
+
+  @@index([role])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  description String
+  price       Decimal         @db.Decimal(10, 2)
+  category    ProductCategory
+  imageUrl    String?
+  inStock     Boolean         @default(true)
+  featured    Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  reviews     Review[]
+
+  @@index([category])
+  @@index([featured])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  title     String?
+  content   String
+  imageUrl  String?
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, userId])
+  @@index([productId])
+  @@index([userId])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  invoiceNumber String      @unique
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  total         Decimal     @db.Decimal(10, 2)
+  balanceAfter  Decimal     @db.Decimal(10, 2)
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  name      String
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+  lineTotal Decimal @db.Decimal(10, 2)
+
+  @@index([orderId])
+}
+
+model SystemLog {
+  id        String        @id @default(cuid())
+  category  EventCategory
+  action    String
+  status    EventStatus
+  message   String
+  userId    String?
+  username  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime      @default(now())
+
+  @@index([category])
+  @@index([status])
+  @@index([action])
+  @@index([userId])
+  @@index([createdAt])
+}

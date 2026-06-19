@@ -1,0 +1,47 @@
+---
+import { getAvatarInitials } from "@/lib/avatar";
+
+interface Props {
+  username: string;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  size?: "sm" | "md" | "lg";
+  class?: string;
+}
+
+const {
+  username,
+  displayName,
+  avatarUrl,
+  size = "lg",
+  class: className = "",
+} = Astro.props;
+
+const initials = getAvatarInitials(username, displayName);
+
+const sizeClasses = {
+  sm: "h-9 w-9 text-xs",
+  md: "h-16 w-16 text-lg",
+  lg: "h-24 w-24 text-2xl",
+};
+const sizeClass = sizeClasses[size];
+---
+
+{
+  avatarUrl ? (
+    <img
+      src={avatarUrl}
+      alt=""
+      width={size === "lg" ? 96 : size === "md" ? 64 : 36}
+      height={size === "lg" ? 96 : size === "md" ? 64 : 36}
+      class={`${sizeClass} rounded-full object-cover ring-2 ring-accent/30 ${className}`}
+    />
+  ) : (
+    <span
+      class={`${sizeClass} flex items-center justify-center rounded-full bg-accent/15 font-semibold text-accent ring-2 ring-accent/30 ${className}`}
+      aria-hidden="true"
+    >
+      {initials}
+    </span>
+  )
+}

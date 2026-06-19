@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Segoe UI', system-ui, sans-serif;
+  --color-volt-50: #eef9ff;
+  --color-volt-100: #d9f1ff;
+  --color-volt-200: #bce7ff;
+  --color-volt-300: #8ed6ff;
+  --color-volt-400: #59bcff;
+  --color-volt-500: #339dff;
+  --color-volt-600: #1a7df5;
+  --color-volt-700: #1364e1;
+  --color-volt-800: #1651b6;
+  --color-volt-900: #18468f;
+  --color-volt-950: #132c57;
+  --color-stream-400: #34d399;
+  --color-stream-500: #10b981;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 antialiased;
+}

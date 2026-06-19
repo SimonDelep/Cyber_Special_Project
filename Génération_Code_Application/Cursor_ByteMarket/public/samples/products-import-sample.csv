@@ -1,0 +1,4 @@
+slug,name,description,price,stock,category_slug,image_url,featured
+corsair-vengeance-32gb,Corsair Vengeance 32GB DDR5,"32GB (2x16GB) DDR5-6000 CL30 desktop memory kit.",189.99,15,components,https://images.unsplash.com/photo-1591488320449-011701bb6704?w=800&q=80,false
+steelseries-arctis-nova-7,SteelSeries Arctis Nova 7,"Wireless gaming headset with dual wireless and 38-hour battery.",219.99,22,peripherals,https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=80,true
+seagate-expansion-4tb,Seagate Expansion 4TB,"Portable USB 3.0 external hard drive for backups and media.",119.99,30,storage,,false

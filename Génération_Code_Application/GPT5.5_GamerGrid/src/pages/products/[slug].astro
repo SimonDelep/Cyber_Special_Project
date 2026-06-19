@@ -1,0 +1,72 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProductReviews from '@/components/solid/ProductReviews';
+import { getProductBySlug } from '@/lib/products';
+
+const { slug } = Astro.params;
+const product = slug ? await getProductBySlug(slug) : null;
+
+if (!product) {
+  return Astro.redirect('/catalog');
+}
+
+const user = Astro.locals.user;
+---
+
+<BaseLayout title={`${product.name} — VoltStream`} description={product.description}>
+  <article class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <a href="/catalog" class="text-sm text-volt-400 hover:text-volt-300">← Back to catalog</a>
+
+    <div class="mt-8 grid gap-10 lg:grid-cols-2">
+      <div class="flex items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900 p-12">
+        <img
+          src={product.image}
+          alt=""
+          class="max-h-72 object-contain"
+          width={280}
+          height={280}
+        />
+      </div>
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-stream-400">
+          {product.categoryName}
+        </p>
+        <h1 class="mt-2 text-3xl font-bold text-white">{product.name}</h1>
+        {product.badge && (
+          <span class="mt-3 inline-flex rounded-full bg-volt-600/30 px-3 py-1 text-xs font-medium text-volt-300">
+            {product.badge}
+          </span>
+        )}
+        <p class="mt-6 text-3xl font-bold text-white">${product.price.toFixed(2)}</p>
+        <p class="mt-4 leading-relaxed text-slate-400">{product.description}</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <button
+            type="button"
+            data-add-cart
+            data-product-id={product.id}
+            data-product-name={product.name}
+            data-product-price={product.price}
+            class="rounded-full bg-volt-600 px-6 py-3 text-sm font-semibold text-white hover:bg-volt-500 disabled:cursor-not-allowed disabled:bg-slate-700"
+          >
+            Add to cart
+          </button>
+          <span
+            class="hidden text-sm text-stream-400"
+            data-cart-feedback
+            role="status"
+          />
+          <a
+            href="#reviews"
+            class="rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-slate-200 hover:bg-white/5"
+          >
+            Read reviews
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-16 border-t border-white/10 pt-16">
+      <ProductReviews product={product} user={user} client:load />
+    </div>
+  </article>
+</BaseLayout>

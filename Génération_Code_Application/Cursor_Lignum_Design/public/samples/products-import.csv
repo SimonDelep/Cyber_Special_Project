@@ -1,0 +1,3 @@
+name,slug,description,price,compareAt,categorySlug,stock,status,featured,images,material,dimensions,weight
+"Table basse Noyer","table-basse-noyer","Table basse en noyer massif, finition huilée.",449.99,499.99,salon,12,PUBLISHED,false,"https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=1200&q=80",Noyer,"120x60x45 cm","18 kg"
+"Étagère murale Chêne","","Étagère flottante en chêne blanc.",189.00,,salon,8,DRAFT,false,"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",Chêne,"90x25x20 cm","6 kg"

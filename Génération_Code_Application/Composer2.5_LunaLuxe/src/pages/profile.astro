@@ -1,0 +1,151 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import Alert from '@/components/Alert.astro';
+import FormField from '@/components/FormField.astro';
+import { formatCurrency } from '@/lib/format';
+
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect(`/login?redirect=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+const error = Astro.url.searchParams.get('error');
+const success = Astro.url.searchParams.get('success');
+
+const inputClass =
+  'mt-1 w-full rounded-xl border border-luna-200 bg-luna-50 px-4 py-2.5 text-sm text-luna-900 outline-none transition-colors focus:border-lavender-400 focus:ring-2 focus:ring-lavender-400/20';
+---
+
+<BaseLayout title="My Profile — LunaLuxe">
+  <Header />
+
+  <main class="mx-auto max-w-2xl px-6 pb-24 pt-28">
+    <div class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-lavender-500">Account</p>
+      <h1 class="mt-2 font-serif text-4xl font-semibold text-luna-900">Your profile</h1>
+      <p class="mt-2 text-sm text-luna-600">
+        Role: <span class="font-medium capitalize text-luna-800">{user.role}</span>
+        · Balance: <span class="font-medium text-luna-800">{formatCurrency(user.balance)}</span>
+        · Member since {new Date(user.createdAt).toLocaleDateString()}
+      </p>
+    </div>
+
+    <Alert type="error" message={error} />
+    <Alert type="success" message={success} />
+
+    <!-- Profile picture -->
+    <section class="mb-8 rounded-2xl border border-luna-200 bg-white p-6 shadow-sm">
+      <h2 class="font-serif text-xl font-semibold text-luna-900">Profile picture</h2>
+      <div class="mt-4 flex items-center gap-6">
+        {user.avatarUrl ? (
+          <img
+            src={user.avatarUrl}
+            alt="Your avatar"
+            class="h-24 w-24 rounded-full object-cover ring-4 ring-luna-100"
+          />
+        ) : (
+          <div class="flex h-24 w-24 items-center justify-center rounded-full bg-luna-200 font-serif text-3xl text-luna-600">
+            {user.displayName.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <p class="text-sm text-luna-600">
+          Upload an image file (max 2 MB) or paste an image URL below.
+        </p>
+      </div>
+    </section>
+
+    <!-- Edit profile -->
+    <form
+      action="/api/profile/update"
+      method="post"
+      enctype="multipart/form-data"
+      class="space-y-6 rounded-2xl border border-luna-200 bg-white p-6 shadow-sm"
+    >
+      <h2 class="font-serif text-xl font-semibold text-luna-900">Profile details</h2>
+
+      <FormField label="Display name" name="displayName" value={user.displayName} required />
+      <FormField label="Email" name="email" type="email" value={user.email} required />
+      <FormField label="Bio" name="bio" value={user.bio} rows={4} placeholder="Tell us about your sleep rituals…" />
+
+      <div>
+        <label for="avatarUrl" class="block text-sm font-medium text-luna-700">Avatar URL</label>
+        <input
+          type="url"
+          id="avatarUrl"
+          name="avatarUrl"
+          value={user.avatarUrl?.startsWith('http') ? user.avatarUrl : ''}
+          placeholder="https://example.com/photo.jpg"
+          class={inputClass}
+        />
+      </div>
+
+      <div>
+        <label for="avatarFile" class="block text-sm font-medium text-luna-700">Or upload image</label>
+        <input
+          type="file"
+          id="avatarFile"
+          name="avatarFile"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          class="mt-1 block w-full text-sm text-luna-600 file:mr-4 file:rounded-full file:border-0 file:bg-luna-200 file:px-4 file:py-2 file:text-sm file:font-medium file:text-luna-800 hover:file:bg-luna-300"
+        />
+      </div>
+
+      {user.avatarUrl && (
+        <label class="flex items-center gap-2 text-sm text-luna-600">
+          <input type="checkbox" name="clearAvatar" value="1" class="rounded border-luna-300" />
+          Remove current profile picture
+        </label>
+      )}
+
+      <hr class="border-luna-200" />
+
+      <h3 class="text-sm font-semibold text-luna-800">Change password (optional)</h3>
+      <FormField label="Current password" name="currentPassword" type="password" />
+      <FormField label="New password" name="newPassword" type="password" hint="Leave blank to keep current password" />
+
+      <button
+        type="submit"
+        class="w-full rounded-full bg-luna-800 py-3 text-sm font-semibold text-luna-50 transition-colors hover:bg-luna-700"
+      >
+        Save changes
+      </button>
+    </form>
+
+    <!-- Delete account -->
+    <form
+      action="/api/profile/update"
+      method="post"
+      class="mt-8 space-y-4 rounded-2xl border border-red-200 bg-red-50/50 p-6"
+      onsubmit="return confirm('This permanently deletes your account. Continue?');"
+    >
+      <input type="hidden" name="_action" value="delete" />
+      <h2 class="font-serif text-xl font-semibold text-red-900">Delete account</h2>
+      <p class="text-sm text-red-800">
+        This action cannot be undone. Type your username <strong>{user.username}</strong> to confirm.
+      </p>
+      <div>
+        <label for="confirmUsername" class="block text-sm font-medium text-red-800">Username</label>
+        <input
+          type="text"
+          id="confirmUsername"
+          name="confirmUsername"
+          required
+          placeholder={user.username}
+          class="mt-1 w-full rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
+        />
+      </div>
+      <button
+        type="submit"
+        class="rounded-full border border-red-300 bg-white px-6 py-2.5 text-sm font-semibold text-red-700 transition-colors hover:bg-red-100"
+      >
+        Delete my account
+      </button>
+    </form>
+  </main>
+
+  <Footer />
+</BaseLayout>

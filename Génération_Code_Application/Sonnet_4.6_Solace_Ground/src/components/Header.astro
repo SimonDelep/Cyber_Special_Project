@@ -1,0 +1,42 @@
+---
+import CartButton from '@/components/solid/CartButton';
+import AuthNav from '@/components/AuthNav.astro';
+import type { PublicUser } from '@/types/auth';
+
+interface Props {
+  user?: PublicUser | null;
+}
+
+const { user = null } = Astro.props;
+---
+
+<header class="sticky top-0 z-50 border-b border-cork-200/80 bg-cork-50/90 backdrop-blur-md">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
+    <a href="/" class="group flex flex-col leading-none">
+      <span class="font-serif text-2xl tracking-tight text-cork-900 group-hover:text-cork-700 transition-colors">
+        Solace Ground
+      </span>
+      <span class="mt-0.5 text-[0.65rem] uppercase tracking-[0.2em] text-cork-500">
+        Natural cork practice
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-8 text-sm font-medium text-cork-700 md:flex" aria-label="Main">
+      <a href="/catalog" class="hover:text-cork-900 transition-colors">Catalog</a>
+      <a href="/yoga-poses" class="hover:text-cork-900 transition-colors">Yoga poses</a>
+      <a href="/#collection" class="hover:text-cork-900 transition-colors">Featured</a>
+      <a href="/#craft" class="hover:text-cork-900 transition-colors">Craft</a>
+    </nav>
+
+    <div class="flex items-center gap-4">
+      <a
+        href="/catalog"
+        class="hidden rounded-full bg-cork-800 px-5 py-2 text-sm font-medium text-cork-50 hover:bg-cork-700 transition-colors sm:inline-block"
+      >
+        Shop
+      </a>
+      <AuthNav user={user} />
+      <CartButton client:load />
+    </div>
+  </div>
+</header>

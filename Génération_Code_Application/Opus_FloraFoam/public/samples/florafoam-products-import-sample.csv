@@ -1,0 +1,4 @@
+slug,name,description,category,price_dollars,image_url,featured,in_stock
+lavender-mist-botanical-toner,Lavender Mist Botanical Toner,"Lightweight plant-based toner with lavender and aloe to refresh and balance skin.",SERUM,42.00,https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=80,true,true
+overnight-repair-balm,Overnight Repair Balm,"Rich exosome-infused balm for deep overnight renewal—vegan and cruelty-free.",NIGHT_CREAM,89.00,https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80,true,true
+cucumber-cool-eye-patches,Cucumber Cool Eye Patches,"Botanical hydrogel under-eye patches with cucumber and chamomile to depuff tired eyes.",EYE_PATCH,34.00,,false,true

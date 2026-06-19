@@ -1,0 +1,79 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Hero from "@/components/landing/Hero.astro";
+import Categories from "@/components/landing/Categories.astro";
+import FeaturedProducts from "@/components/landing/FeaturedProducts.astro";
+import About from "@/components/landing/About.astro";
+import { getCategories, getLandingProducts } from "@/lib/products";
+import { getChicoutimiWeather } from "@/lib/weather/chicoutimi";
+
+let categories: Awaited<ReturnType<typeof getCategories>> = [];
+let catalogProducts: Awaited<ReturnType<typeof getLandingProducts>> = [];
+let weather: Awaited<ReturnType<typeof getChicoutimiWeather>> = null;
+let dbError: string | null = null;
+
+const flashError = Astro.url.searchParams.get("error");
+const flashSuccess = Astro.url.searchParams.get("success");
+
+const flashMessages: Record<string, string> = {
+  admin_required: "Admin access required.",
+  logged_out: "You have been signed out.",
+};
+
+const errorMessage =
+  flashError && flashMessages[flashError] ? flashMessages[flashError] : null;
+const successMessage =
+  flashSuccess && flashMessages[flashSuccess]
+    ? flashMessages[flashSuccess]
+    : flashSuccess;
+
+const [weatherResult, catalogResult] = await Promise.allSettled([
+  getChicoutimiWeather(),
+  Promise.all([getCategories(), getLandingProducts(6)]),
+]);
+
+if (weatherResult.status === "fulfilled") {
+  weather = weatherResult.value;
+}
+
+if (catalogResult.status === "fulfilled") {
+  [categories, catalogProducts] = catalogResult.value;
+} else {
+  const err = catalogResult.reason;
+  dbError =
+    err instanceof Error
+      ? err.message
+      : "Database unavailable. Run npm run db:setup.";
+}
+---
+
+<BaseLayout>
+  {dbError && (
+    <div
+      class="border-b border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center text-sm text-amber-200"
+      role="status"
+    >
+      {dbError} — <code class="font-mono">npm run db:setup</code>
+    </div>
+  )}
+  {errorMessage && (
+    <div
+      class="border-b border-red-500/30 bg-red-500/10 px-4 py-3 text-center text-sm text-red-200"
+      role="alert"
+    >
+      {errorMessage}
+    </div>
+  )}
+  {successMessage && (
+    <div
+      class="border-b border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-200"
+      role="status"
+    >
+      {successMessage}
+    </div>
+  )}
+  <Hero weather={weather} />
+  <Categories categories={categories} />
+  <FeaturedProducts products={catalogProducts} />
+  <About />
+</BaseLayout>
